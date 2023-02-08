@@ -1,0 +1,511 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col-auto pt-2">
+          <h3 class="page-title">Drivers</h3>
+        </div>
+        <div class="col-auto float-end ms-auto">
+          <div class="d-flex">
+            <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_driver" (click)="closeModel()"><i class="fa fa-plus"></i>Add Driver</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page Header -->
+    <div class="row filter-row mb-2">
+      <div class="col-lg-2 pt-3 pe-3 ps-3 d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-12 w-100">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" (input)="searchDriverById($event.target.value)" />
+            <label class="focus-label ticket-label">ID</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 pt-3">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-12 search-button">
+          <a class="btn btn-success w-100" (click)="SearchData()">SEARCH</a>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row pt-4">
+          <div class="w-30 d-flex justify-content-start">
+            <label class="custom-control-label pe-3" for="defaultInline2">Show All </label>
+            <div class="status-toggle ps-3 align-item-right">
+              <input type="checkbox" id="staff_module" class="check" (change)="ShowAllDriver($event)" />
+              <label for="staff_module" class="checktoggle" style="float: left">checkbox</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-hover custom-table mb-0 datatable">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr >
+
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+     
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound == true && !isLoading">
+              <tr  style="width: 100%;">
+            
+                <td colspan="4" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading ">
+              <tr *ngFor="let item of lstDriver; let i = index">
+                <td data-bs-toggle="modal" data-bs-target="#edit_driver" (click)="edit(item.ID)">{{ i + 1 }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_driver" (click)="edit(item.ID)">{{ item.Code }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_driver" (click)="edit(item.ID)">{{ item.Full_Name }}</td>
+
+                <td class="text-end">
+                  <div class="dropdown dropdown-action">
+                    <a class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_driver" (click)="edit(item.ID)" *ngIf="findResult == 'none'"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_driver" (click)="edit(item.ID)" [style.display]="findResult"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history" (click)="getHistory(item.ID)" *ngIf="findResult == 'none'"><i class="fa fa-history m-r-5"></i> View History</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history" (click)="getHistory(item.ID)" [style.display]="findResult"><i class="fa fa-history m-r-5"></i> View History</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <div *ngIf="isLoading" class="d-flex justify-content-center w-100 mb-5">
+            <div class="spinner-border text-center" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+
+  <!-- Add driver Modal -->
+  <div id="add_driver" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Driver</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="adddriver()" [formGroup]="addDriverForm">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Driver Name <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addDriverForm.get('FullName').invalid && addDriverForm.get('FullName').touched" formControlName="FullName" />
+                  <div *ngIf="addDriverForm.get('FullName').invalid && (addDriverForm.get('FullName').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('FullName').invalid && (addDriverForm.get('FullName').touched || isAddFormSubmitted)" class="text-danger"> Driver Name is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Select Type<span class="text-danger">*</span></label>
+                  <select class="form-select form-control" [class.invalid]="addDriverForm.get('Driver_Type_ID').invalid && addDriverForm.get('Driver_Type_ID').touched" formControlName="Driver_Type_ID">
+                    
+                    <option value="2">Truck Hire</option>
+                    <option value="1">Employee</option>
+                  </select>
+                  <div *ngIf="addDriverForm.get('Driver_Type_ID').invalid && (addDriverForm.get('Driver_Type_ID').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Driver_Type_ID').invalid && (addDriverForm.get('Driver_Type_ID').touched || isAddFormSubmitted)" class="text-danger"> Type is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Code<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addDriverForm.get('Code').invalid && addDriverForm.get('Code').touched" formControlName="Code" />
+                  <div *ngIf="addDriverForm.get('Code').invalid && (addDriverForm.get('Code').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Code').invalid && (addDriverForm.get('Code').touched || isAddFormSubmitted)" class="text-danger"> Code is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Hire Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input type="text" class="form-control floating datetimepicker"  formControlName="Hire_Date" bsDatepicker (bsValueChange)="addDriverDate($event)" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+                  </div>
+
+                  <div *ngIf="addDriverForm.get('Hire_Date').invalid && (addDriverForm.get('Hire_Date').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Hire_Date').invalid && (addDriverForm.get('Hire_Date').touched || isAddFormSubmitted)" class="text-danger"> Hire Date is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Percentage<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addDriverForm.get('Percentage').invalid && addDriverForm.get('Percentage').touched" formControlName="Percentage" />
+                  <div *ngIf="addDriverForm.get('Percentage').invalid && (addDriverForm.get('Percentage').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Percentage').invalid && (addDriverForm.get('Percentage').touched || isAddFormSubmitted)" class="text-danger"> Percentage is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>City<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addDriverForm.get('City').invalid && addDriverForm.get('City').touched" formControlName="City" />
+                  <div *ngIf="addDriverForm.get('City').invalid && (addDriverForm.get('City').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('City').invalid && (addDriverForm.get('City').touched || isAddFormSubmitted)" class="text-danger"> City is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Address 1<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addDriverForm.get('Address1').invalid && addDriverForm.get('Address1').touched" formControlName="Address1" />
+                  <div *ngIf="addDriverForm.get('Address1').invalid && (addDriverForm.get('Address1').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Address1').invalid && (addDriverForm.get('Address1').touched || isAddFormSubmitted)" class="text-danger"> Address 1 is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Address 2<span class="text-danger"></span></label>
+                  <input class="form-control" type="text" formControlName="Address2" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>State<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addDriverForm.get('State').invalid && addDriverForm.get('State').touched" formControlName="State" />
+                  <div *ngIf="addDriverForm.get('State').invalid && (addDriverForm.get('State').touched || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('State').invalid && (addDriverForm.get('State').touched|| isAddFormSubmitted)" class="text-danger"> State is required</small>
+                  </div>
+                  <div *ngIf="addDriverForm.get('State').invalid && addDriverForm.get('State').dirty">
+                    <small class="text-danger"> Please enter State Alpha Code</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Zip Code<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addDriverForm.get('Zip_Code').invalid && addDriverForm.get('Zip_Code').touched" formControlName="Zip_Code" />
+                  <div *ngIf="addDriverForm.get('Zip_Code').invalid && (addDriverForm.get('Zip_Code').dirty || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Zip_Code').invalid && (addDriverForm.get('Zip_Code').dirty || isAddFormSubmitted)" class="text-danger"> Zip Code is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Phone<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addDriverForm.get('Phone').invalid && addDriverForm.get('Phone').touched" formControlName="Phone" />
+                  <div *ngIf="addDriverForm.get('Phone').invalid && (addDriverForm.get('Phone').dirty || isAddFormSubmitted)">
+                    <small *ngIf="addDriverForm.get('Phone').invalid && (addDriverForm.get('Phone').dirty || isAddFormSubmitted)" class="text-danger"> Phone is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Fax<span class="text-danger"></span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" formControlName="Fax" />
+                </div>
+              </div>
+            </div>
+            <div class="row form-group">
+              <label class="col-md-3">Set as Inactive</label>
+              <div class="status-toggle ms-4 col-md-3 align-items-center">
+                <input type="checkbox" id="staff_module1" class="check" formControlName="Is_InActive" />
+                <label for="staff_module1" class="checktoggle" style="float: left">checkbox</label>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Add driver Modal -->
+
+  <!-- Edit driver Modal -->
+  <div id="edit_driver" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Driver</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="editdriver()" [formGroup]="editdriverForm">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Driver Name <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editdriverForm.get('FullName').invalid && editdriverForm.get('FullName').touched" formControlName="FullName" />
+                  <div *ngIf="editdriverForm.get('FullName').invalid && (editdriverForm.get('FullName').touched || isAddFormSubmitted)">
+                    <small *ngIf="editdriverForm.get('FullName').invalid && (editdriverForm.get('FullName').touched || isAddFormSubmitted)" class="text-danger"> Driver Name is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Type<span class="text-danger">*</span></label>
+                  <select class="form-select form-control" [class.invalid]="editdriverForm.get('Driver_Type_ID').invalid && editdriverForm.get('Driver_Type_ID').touched" formControlName="Driver_Type_ID">
+                    
+                    <option value="2">Truck Hire</option>
+                    <option value="1">Employee</option>
+                  </select>
+                  <div *ngIf="editdriverForm.get('Driver_Type_ID').invalid && editdriverForm.get('Driver_Type_ID').touched">
+                    <small *ngIf="editdriverForm.get('Driver_Type_ID').invalid && editdriverForm.get('Driver_Type_ID').touched" class="text-danger"> Type is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Code<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editdriverForm.get('Code').invalid && editdriverForm.get('Code').touched" formControlName="Code" />
+                  <div *ngIf="editdriverForm.get('Code').invalid && editdriverForm.get('Code').touched">
+                    <small *ngIf="editdriverForm.get('Code').invalid && editdriverForm.get('Code').touched" class="text-danger"> Code is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Hire Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input type="text" class="form-control floating datetimepicker" [class.invalid]="editdriverForm.get('Hire_Date').invalid && editdriverForm.get('Hire_Date').touched" formControlName="Hire_Date" bsDatepicker (bsValueChange)="addDriverDate($event)" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+                  </div>
+                  <div *ngIf="editdriverForm.get('Hire_Date').invalid && editdriverForm.get('Hire_Date').touched">
+                    <small *ngIf="editdriverForm.get('Hire_Date').invalid && editdriverForm.get('Hire_Date').touched" class="text-danger"> Hire Date is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Percentage<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="editdriverForm.get('Percentage').invalid && editdriverForm.get('Percentage').touched" formControlName="Percentage" />
+                  <div *ngIf="editdriverForm.get('Percentage').invalid && editdriverForm.get('Percentage').touched">
+                    <small *ngIf="editdriverForm.get('Percentage').invalid && editdriverForm.get('Percentage').touched" class="text-danger"> Percentage is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>City<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editdriverForm.get('City').invalid && editdriverForm.get('City').touched" formControlName="City" />
+                  <div *ngIf="editdriverForm.get('City').invalid && editdriverForm.get('City').touched">
+                    <small *ngIf="editdriverForm.get('City').invalid && editdriverForm.get('City').touched" class="text-danger"> City is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Address 1<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editdriverForm.get('Address1').invalid && editdriverForm.get('Address1').touched" formControlName="Address1" />
+                  <div *ngIf="editdriverForm.get('Address1').invalid && editdriverForm.get('Address1').touched">
+                    <small *ngIf="editdriverForm.get('Address1').invalid && editdriverForm.get('Address1').touched" class="text-danger"> Address 1 is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Address 2<span class="text-danger"></span></label>
+                  <input class="form-control" type="text" formControlName="Address2" />
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>State<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editdriverForm.get('State').invalid && editdriverForm.get('State').touched" formControlName="State" />
+                  <div *ngIf="editdriverForm.get('State').invalid && editdriverForm.get('State').touched">
+                    <small *ngIf="editdriverForm.get('State').invalid && editdriverForm.get('State').touched" class="text-danger"> State is required</small>
+                  </div>
+                  <div *ngIf="editdriverForm.get('State').invalid && (editdriverForm.get('State').dirty || isAddFormSubmitted)">
+                    <small class="text-danger"> Please enter State Alpha Code</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Zip Code<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="editdriverForm.get('Zip_Code').invalid && editdriverForm.get('Zip_Code').touched" formControlName="Zip_Code" />
+                  <div *ngIf="editdriverForm.get('Zip_Code').invalid && editdriverForm.get('Zip_Code').touched">
+                    <small *ngIf="editdriverForm.get('Zip_Code').invalid && editdriverForm.get('Zip_Code').touched" class="text-danger"> Zip Code is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Phone<span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="editdriverForm.get('Phone').invalid && editdriverForm.get('Phone').touched" formControlName="Phone" />
+                  <div *ngIf="editdriverForm.get('Phone').invalid && editdriverForm.get('Phone').touched">
+                    <small *ngIf="editdriverForm.get('Phone').invalid && editdriverForm.get('Phone').touched" class="text-danger"> Phone is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label>Fax<span class="text-danger"></span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" formControlName="Fax" />
+                </div>
+              </div>
+            </div>
+            <div class="row form-group">
+              <label class="col-md-3">Set as Inactive</label>
+              <div class="status-toggle ms-4 col-md-3 align-items-center">
+                <input type="checkbox" id="staff_module1" class="check" formControlName="Is_InActive" />
+                <label for="staff_module1" class="checktoggle" style="float: left">checkbox</label>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Edit driver Modal -->
+
+  <!-- Delete driver Modal -->
+  <div class="modal custom-modal fade" id="delete_driver" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete driver</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+          <div class="modal-btn delete-action">
+            <div class="row">
+              <div class="col-6">
+                <a class="btn btn-primary continue-btn" (click)="deletedriver()">Delete</a>
+              </div>
+              <div class="col-6">
+                <a data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete driver Modal -->
+
+  <!-- History Modal -->
+  <div id="view_history" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered history-modal" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">History</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-striped custom-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px">#</th>
+                      <th>Driver ID</th>
+                      <th>Driver Type ID</th>
+                      <th>Full Name</th>
+                      <th>Code</th>
+                      <th>Hire Date</th>
+                      <th>Percentage</th>
+                      <th>Address 1</th>
+                      <th>Address 2</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Zip Code</th>
+                      <th>Phone</th>
+                      <th>Fax</th>
+                      <th>Active</th>
+                      <th>Updated by</th>
+                      <th>Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of LoopHistoryData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.Driver_ID }}</td>
+                      <td>{{ item.Driver_Type_ID }}</td>
+                      <td>{{ item.Full_Name }}</td>
+                      <td>{{ item.Code }}</td>
+                      <td>{{ item.Hire_Date | date }}</td>
+                      <td>{{ item.Percentage }}%</td>
+                      <td>{{ item.Address_1 }}</td>
+                      <td>{{ item.Address_2 }}</td>
+                      <td>{{ item.City }}</td>
+                      <td>{{ item.State }}</td>
+                      <td>{{ item.Zip_Code }}</td>
+                      <td>{{ item.Phone }}</td>
+                      <td>{{ item.Fax }}</td>
+                      <td>{{ item.Is_Inactive }}</td>
+                      <td>{{ item.Updated_By }}</td>
+                      <td>{{ item.Last_Updated_Date | date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /History Modal -->
+</div>

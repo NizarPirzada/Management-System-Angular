@@ -1,0 +1,318 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col-auto pt-2">
+          <h3 class="page-title">Trucks</h3>
+        </div>
+        <div class="col-auto float-end ms-auto">
+          <div class="d-flex addbtn">
+            <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_truck" (click)="closeModel()"><i class="fa fa-plus"></i> Add Truck</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row filter-row mb-2">
+      <div class="col-lg-2 pt-3 pe-3 ps-3 d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-12 w-100">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" (input)="searchTruckbycode($event.target.value)" />
+            <label class="focus-label ticket-label">Code</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 pt-3">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-12 search-button">
+          <a class="btn btn-success w-100" (click)="SearchData()">SEARCH</a>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row pt-4">
+          <div class="w-30 d-flex justify-content-start">
+            <label class="custom-control-label pe-3" for="defaultInline2">Show All </label>
+            <div class="status-toggle ps-3 align-item-right">
+              <input type="checkbox" id="staff_module" class="check" (change)="ShowAllTruck($event)" />
+              <label for="staff_module" class="checktoggle" style="float: left">checkbox</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-hover custom-table mb-0 datatable">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr >
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                
+  
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound == true  && !isLoading">
+              <tr  style="width: 100%;">
+            
+                <td colspan="4" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading">
+              <tr *ngFor="let item of loopTruckData; let i = index">
+                <td data-bs-toggle="modal" data-bs-target="#edit_truck" (click)="edit(item.ID)">{{ i + 1 }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_truck" (click)="edit(item.ID)">{{ item.Code }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_truck" (click)="edit(item.ID)">{{ item.Description }}</td>
+                <td class="text-end">
+                  <div class="dropdown dropdown-action">
+                    <a class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_truck" (click)="edit(item.ID)" *ngIf="findResult == 'none'"><i class="fa fa-pencil m-r-5"></i> Edit </a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_truck" (click)="edit(item.ID)" [style.display]="findResult"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history" (click)="getHistory(item.ID)"><i class="fa fa-history m-r-5"></i> View History</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <div *ngIf="isLoading" class="d-flex justify-content-center w-100 mt-5 mb-5">
+            <div class="spinner-border text-center" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div> -->
+          <!-- <div *ngIf="Norecordfound == true" class="mt-5 mb-5"><h3 class="text-center">Record Not Found</h3></div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+
+  <!-- Add truck Modal -->
+  <div id="add_truck" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Truck</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="addTruck()" [formGroup]="addTruckForm">
+            <div class="form-group">
+              <label>Driver <span class="text-danger">*</span></label>
+              <select class="form-control form-select floating" [class.invalid]="addTruckForm.get('defaultDriverID').invalid && addTruckForm.get('defaultDriverID').touched" formControlName="defaultDriverID">
+                <option [value]="data.ID" *ngFor="let data of loopDriverData">{{ data.Full_Name }}</option>
+              </select>
+              <div *ngIf="addTruckForm.get('defaultDriverID').invalid && (addTruckForm.get('defaultDriverID').touched || isAddFormSubmitted)">
+                <small class="text-danger"> Driver is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Truck Code<span class="text-danger">*</span></label>
+              <input class="form-control" type="text" [class.invalid]="addTruckForm.get('code').invalid && (addTruckForm.get('code').touched || isAddFormSubmitted)" formControlName="code" />
+              <div *ngIf="addTruckForm.get('code').invalid && (addTruckForm.get('code').touched || isAddFormSubmitted)">
+                <small class="text-danger"> Truck Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" [class.invalid]="addTruckForm.get('description').invalid && (addTruckForm.get('description').touched || isAddFormSubmitted)" formControlName="description" />
+              <div *ngIf="addTruckForm.get('description').invalid && (addTruckForm.get('description').touched || isAddFormSubmitted)">
+                <small class="text-danger">Description is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Truck Category <span class="text-danger">*</span></label>
+              <select class="form-control form-select floating" [class.invalid]="addTruckForm.get('defaultTruckType').invalid && addTruckForm.get('defaultTruckType').touched" formControlName="defaultTruckType">
+                <option [value]="truckType.Id" *ngFor="let truckType of truckTypes">{{ truckType.Name }}</option>
+              </select>
+              <div *ngIf="addTruckForm.get('defaultTruckType').invalid && (addTruckForm.get('defaultTruckType').touched || isAddFormSubmitted)">
+                <small class="text-danger"> Category is required</small>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-6">
+                <div class="row">
+                  <label class="col-md-4">Set as Inactive</label>
+                  <div class="status-toggle ms-4 col-md-6 align-items-left">
+                    <input type="checkbox" id="staff_module1" class="check" formControlName="IsInActive" />
+                    <label for="staff_module1" class="checktoggle" style="float: left">checkbox</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Add truck Modal -->
+
+  <!-- Edit truck Modal -->
+  <div id="edit_truck" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Truck</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="editTruckForm">
+            <div class="form-group">
+              <label>Driver <span class="text-danger">*</span></label>
+              <select class="form-control form-select floating" [class.invalid]="editTruckForm.get('defaultDriverID').invalid && editTruckForm.get('defaultDriverID').touched" formControlName="defaultDriverID">
+                <option [ngValue]="data.ID" *ngFor="let data of loopDriverData">{{ data.Full_Name }}</option>
+              </select>
+              <div *ngIf="editTruckForm.get('defaultDriverID').invalid && editTruckForm.get('defaultDriverID').touched">
+                <small class="text-danger"> Driver is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Truck Code <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" [class.invalid]="editTruckForm.get('code').invalid && editTruckForm.get('code').touched" formControlName="code" />
+              <div *ngIf="editTruckForm.get('code').invalid && editTruckForm.get('code').touched">
+                <small *ngIf="editTruckForm.get('code').invalid && editTruckForm.get('code').touched" class="text-danger"> Truck Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" [class.invalid]="editTruckForm.get('description').invalid && editTruckForm.get('description').touched" formControlName="description" />
+              <div *ngIf="editTruckForm.get('description').invalid && editTruckForm.get('description').touched">
+                <small *ngIf="editTruckForm.get('description').invalid && editTruckForm.get('description').touched" class="text-danger"> Description is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Truck Category <span class="text-danger">*</span></label>
+              <select class="form-control form-select floating" [class.invalid]="editTruckForm.get('defaultTruckType').invalid && editTruckForm.get('defaultTruckType').touched" formControlName="defaultTruckType">
+                <option [ngValue]="truckType.Id" *ngFor="let truckType of truckTypes">{{ truckType.Name }}</option>
+              </select>
+              <div *ngIf="editTruckForm.get('defaultTruckType').invalid && (editTruckForm.get('defaultTruckType').touched || isAddFormSubmitted)">
+                <small class="text-danger"> Category is required</small>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-6">
+                <div class="row">
+                  <label class="col-md-4">Set as Inactive</label>
+
+                  <div class="status-toggle ms-4 col-md-6 align-items-left">
+                    <input type="checkbox" id="staff_module3" class="check" formControlName="IsInActive" />
+                    <label for="staff_module3" class="checktoggle" style="float: left">checkbox</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit" (click)="updateTruck()">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Edit truck Modal -->
+
+  <!-- Delete truck Modal -->
+  <div class="modal custom-modal fade" id="delete_truck" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete Truck</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+          <div class="modal-btn delete-action">
+            <div class="row">
+              <div class="col-6">
+                <a class="btn btn-primary continue-btn" (click)="deleteTruck()">Delete</a>
+              </div>
+              <div class="col-6">
+                <a data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete truck Modal -->
+
+  <!-- History Modal -->
+  <div id="view_history" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered history-modal" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">History</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-striped custom-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px">#</th>
+                      <th>Truck ID</th>
+                      <th>Driver ID</th>
+                      <th>Code</th>
+                      <th>Description</th>
+                      <th>Inactive</th>
+                      <th>Updated by</th>
+                      <th>Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of LoopHistoryData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.Truck_ID }}</td>
+                      <td>{{ item.Default_Driver_ID }}</td>
+                      <td>{{ item.Code }}</td>
+                      <td>{{ item.Description }}</td>
+                      <td>{{ item.Is_Inactive }}</td>
+                      <td>{{ item.Updated_By }}</td>
+                      <td>{{ item.Last_Updated_Date | date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /History Modal -->
+</div>

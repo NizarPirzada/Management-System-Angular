@@ -1,0 +1,39 @@
+.table-striped.table-hover>tbody>tr:hover>td, 
+.table-striped.table-hover>tbody>tr:hover>th {
+  background-color: #EFF6FC;
+  /* color: white; */
+}
+.form-focus .form-control {
+  height: 41px !important;
+  padding: 14px 12px 6px;
+}
+.filter-row .btn {
+  min-height: 41px;
+  padding: 7px;
+  text-transform: uppercase;
+}
+.focus-label {
+  opacity: 1;
+  font-weight: 300;
+  top: -20px !important;
+  font-size: 12px !important;
+  z-index: 1 !important;
+}
+
+tbody > tr {
+  cursor: pointer;
+}
+
+/*
+.no-sort {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+.no-sort::before {
+  display: none !important;
+}
+
+.no-sort::after {
+  display: none !important;
+}
+*/

@@ -1,0 +1,254 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col-auto pt-2">
+          <h3 class="page-title">Truck Hire Payments</h3>
+        </div>
+      </div>
+    </div>
+    <!-- Page Header -->
+
+    <!-- Search Filter -->
+    <div class="row filter-row">
+
+
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input class="form-control floating datetimepicker" type="text" [value]="startDateFilter" bsDatepicker
+              [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }"
+              (bsValueChange)="setStartDateFilter($event)" />
+          </div>
+          <label class="focus-label">Start Date</label>
+        </div>
+      </div>
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input class="form-control floating datetimepicker" type="text" [value]="endDateFilter" bsDatepicker
+              [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }"
+              (bsValueChange)="setEndDateFilter($event)" />
+          </div>
+          <label class="focus-label">End Date</label>
+        </div>
+      </div>
+
+      <div class="col-sm-1 col-md-1 text-center or-col p-1">
+        <h2 class="or-col" style="color: #dee2e6">OR</h2>
+      </div>
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus">
+          <input type="text" class="form-control floating" [value]="invoiceIdFilter"
+            (change)="setInvoiceIdFilter($event.target.value)" />
+          <label class="focus-label">ID</label>
+        </div>
+      </div>
+
+      <div class="col-sm-2 col-md-2">
+        <a class="btn btn-success w-100" (click)="getFilteredTruckHireReports()"> SEARCH </a>
+      </div>
+    </div>
+    <!-- /Search Filter -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover custom-table mb-0 datatable tablelastrow" datatable
+            [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Invoice ID</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <!-- <th class="text-end"></th> -->
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoadingData">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound == true && !isLoadingData">
+              <tr style="width: 100%">
+                <td colspan="5" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoadingData && Norecordfound == false">
+              <tr (click)="paymentReportViewHandler(p.InvoiceID)" *ngFor="let p of truckHirePayments; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ p.InvoiceID }}</td>
+                <td>${{ (p.Amount * (p.Rate / 100.0)).toFixed(2) }}</td>
+                <td>{{ p.CreatedAt | date }}</td>
+                <td>{{ p.CustomerName }}</td>
+                <!--
+                  <td>
+                    <div class="pull-right">
+                      <a class="me-3" (click)="paymentReportPdfHandler(p.PaymentID)">
+                        <i class="fa fa-2x fa-file-pdf-o text-success"></i>
+                      </a>
+                      <a class="me-3" (click)="paymentReportPrintHandler(p.PaymentID)">
+                        <i class="fa fa-2x fa-print text-success"></i>
+                      </a>
+                      <a (click)="paymentReportViewHandler(p.PaymentID)">
+                        <i class="fa fa-2x fa-eye text-success"></i>
+                      </a>
+                    </div>
+                  </td>
+                -->
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+
+  <!-- Truck Hire Payment PDF Modal -->
+  <div id="truckHirePaymentModal" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="printSection" class="row">
+            <div class="col-md-12">
+              <div class="card" *ngIf="!isLoadingData && truckHirePayment.length > 0">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-6 m-b-20">
+                      <img src="assets/img/logo2.png" class="inv-logo" alt="" />
+                    </div>
+                    <div class="col-sm-6 m-b-20">
+                      <div class="invoice-details">
+                        <h3 class="text-uppercase">Invoice # {{ truckHirePayment[0].Invoice_ID }}</h3>
+                        <ul class="list-unstyled">
+                          <li>
+                            Date: <span>{{ truckHirePayment[0].Date_Range_End.substr(0, 10) }}</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6 col-lg-7 col-xl-8 m-b-20">
+                      <ul class="list-unstyled">
+                        <li>{{ truckHirePayment[0].Customer_Description }}</li>
+                        <li>{{ truckHirePayment[0].Customer_Address }}</li>
+                        <li>{{ truckHirePayment[0].Customer_City }}, {{ truckHirePayment[0].Customer_State }}, {{
+                          truckHirePayment[0].Customer_Zip_Code }}</li>
+                      </ul>
+                    </div>
+                    <div class="col-sm-6 col-lg-5 col-xl-4 m-b-20">
+                      <span class="text-muted">Payment Details:</span>
+                      <ul class="list-unstyled invoice-payment-details">
+                        <li>
+                          <h5>
+                            Total Due: <span class="text-end">${{ (ticketTotal * (truckHirePayment[0].Percentage /
+                              100.0)).toFixed(4) }}</span>
+                          </h5>
+                        </li>
+                        <li>
+                          Company: <span>{{ truckHirePayment[0].Company_Name }}</span>
+                        </li>
+                        <li>
+                          City: <span>{{ truckHirePayment[0].Company_City }}</span>
+                        </li>
+                        <li>
+                          Address: <span>{{ truckHirePayment[0].Company_Address }}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Ticket Date</th>
+                          <th>Contractor</th>
+                          <th>Ticket #</th>
+                          <th>Tons/Hrs.</th>
+                          <th>Rate</th>
+                          <th class="text-end">Ticket Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of truckHirePayment">
+                          <td>{{ item.Ticket_Creation_Date.substr(0, 10) }}</td>
+                          <td>{{ item.Customer_Description }}</td>
+                          <td>{{ item.Ticket_Line_Item_ID }}</td>
+                          <td>{{ item.Quantity.toFixed(3) }}</td>
+                          <td>${{ item.Driver_Price_Per_Unit.toFixed(2) }}</td>
+                          <td class="text-end">${{ item.Line_Item_Total.toFixed(4) }}</td>
+                        </tr>
+                        <tr>
+                          <td colspan="2"></td>
+                          <td>Truck Total</td>
+                          <td>{{ truckTotal.toFixed(3) }}</td>
+                          <td class="text-end" colspan="2">${{ ticketTotal.toFixed(4) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div>
+                    <div class="row invoice-payment">
+                      <div class="col-sm-7"></div>
+                      <div class="col-sm-5">
+                        <div class="m-b-20">
+                          <div class="table-responsive no-border">
+                            <table class="table mb-0">
+                              <tbody>
+                                <tr>
+                                  <th class="text-end">Ticket Total</th>
+                                  <td class="text-end">${{ ticketTotal.toFixed(4) }}</td>
+                                </tr>
+                                <tr>
+                                  <th class="text-end">Rate</th>
+                                  <td class="text-end">{{ truckHirePayment[0].Percentage }}%</td>
+                                </tr>
+                                <tr>
+                                  <th class="text-end">Payment</th>
+                                  <td class="text-end text-primary">
+                                    <h5>${{ (ticketTotal * (truckHirePayment[0].Percentage / 100.0)).toFixed(4) }}</h5>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Truck Hire Payment PDF Modal -->
+</div>

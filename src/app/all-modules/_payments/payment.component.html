@@ -1,0 +1,112 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title">Mark Invoice for payment</h3>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <!-- Search Filter -->
+    <div class="row filter-row">
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" [(ngModel)]="fromDateFilter" />
+          </div>
+          <label class="focus-label">Start Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" [(ngModel)]="toDateFilter" />
+          </div>
+          <label class="focus-label">End Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <a class="btn btn-success w-100" (click)="fromDateFilter && toDateFilter ? findInvoices() : ''"> SEARCH </a>
+      </div>
+    </div>
+    <!-- /Search Filter -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover custom-table mb-0 datatable" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Customer</th>
+                <th>Job</th>
+                <th>Invoice No.</th>
+                <th>Amount</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr >
+                <td colspan="6" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+             
+             
+               
+                
+  
+              </tr>
+            </tbody>
+            <tbody *ngIf="noRecordFound == true">
+              <tr  style="width: 100%;">
+            
+                <td colspan="6" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+               
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading">
+              <tr *ngFor="let invoice of invoices; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ invoice.Customer_Description }}</td>
+                <td>{{ invoice.Job_Description }}</td>
+                <td>{{ invoice.Number }}</td>
+                <td>{{ "$" + invoice.Total_Due }}</td>
+                <td class="text-end">
+                  <button class="btn btn-outline-success" (click)="markInvoiceReadyForPayment(invoice.Invoice_ID)">Mark Payment</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- <div *ngIf="isLoading" class="d-flex justify-content-center text-center mb-5">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+          -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+</div>

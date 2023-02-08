@@ -1,0 +1,187 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title pt-2">Money-Out Report</h3>
+        </div>
+        <div class="col-auto float-end ms-auto" *ngIf="!isLoading">
+          <div class="btn-group btn-group-sm me-3">
+            <button class="btn btn-white" (click)="exportToPdfHandler()"><i class="fa fa-file-pdf-o fa-lg"></i> Export to PDF</button>
+          </div>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-white" (click)="printReportHandler()"><i class="fa fa-file-pdf-o fa-lg"></i> Print Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <!-- Search Filter -->
+    <div class="row filter-row">
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" [value]="startDateFilter" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" (bsValueChange)="setStartDateFilter($event)" />
+          </div>
+          <label class="focus-label">Start Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" [value]="endDateFilter" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" (bsValueChange)="setEndDateFilter($event)" />
+          </div>
+          <label class="focus-label">End Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <a class="btn btn-success w-100" (click)="getMoneyOutReport()"> SEARCH </a>
+      </div>
+    </div>
+    <!-- /Search Filter -->
+
+    <div class="row align-items-center pt-2"></div>
+    <div *ngIf="!isLoading">
+      <div class="row printSection">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6 m-b-20 mt-3">
+                  <img src="assets/img/logo2.png" class="inv-logo" alt="" />
+                </div>
+                <div class="col-sm-6 m-b-10 d-flex justify-content-end align-items-center">
+                  <div class="row invoice-details">
+                    <ul class="list-unstyled mt-3">
+                      <li>
+                        <label style="font-weight: 600">From:</label><span class="ms-1">{{ startDateFilter | date }}</span>
+                      </li>
+                      <li>
+                        <label style="font-weight: 600">To:</label><span class="ms-1">{{ endDateFilter | date }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <h2 class="text-center">Money-Out Report</h2>
+              </div>
+              <div class="row mt-3">
+                <h3 class="text-center">Contractor</h3>
+              </div>
+              <div class="table-responsive px-5">
+                <table class="table table-striped ">
+                  <thead>
+                    <tr>
+                      <th style="width: 85%">Name</th>
+                      <th style="width: 15%">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let c of customersReportData; let i = index">
+                      <td>{{ c.CustomerName }}</td>
+                      <td>{{ "$" + c.TotalAmount.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-end">Total</td>
+                      <td>{{ "$" + customersTotal.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!---------------------Truck Hire 1----------------------------->
+              <div class="row mt-2">
+                <h3 class="text-center">Truck Hire: Company Truck</h3>
+              </div>
+              <div class="table-responsive px-5">
+                <table class="table table-striped ">
+                  <thead>
+                    <tr>
+                      <th style="width: 85%">Name</th>
+                      <th style="width: 15%">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let t of companyTruckReportData; let i = index">
+                      <td>{{ t.TruckName }}</td>
+                      <td>{{ "$" + t.Rate.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-end">Total</td>
+                      <td>{{ "$" + companyTruckTotal.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!---------------------Truck Hire 2----------------------------->
+              <div class="row mt-2">
+                <h3 class="text-center">Truck Hire: 2 Week Pay</h3>
+              </div>
+              <div class="table-responsive px-5">
+                <table class="table table-striped ">
+                  <thead>
+                    <tr>
+                      <th style="width: 85%">Name</th>
+                      <th style="width: 15%">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let t of twoWeekPayTruckReportData; let i = index">
+                      <td>{{ t.TruckName }}</td>
+                      <td>{{ "$" + t.Rate.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-end">Total</td>
+                      <td>{{ "$" + twoWeekPayTruckTotal.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!---------------------Truck Hire 3----------------------------->
+              <div class="row mt-2">
+                <h3 class="text-center">Truck Hire: Regular Pay</h3>
+              </div>
+              <div class="table-responsive px-5">
+                <table class="table table-striped ">
+                  <thead>
+                    <tr>
+                      <th style="width: 85%">Name</th>
+                      <th style="width: 15%">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let t of regularPayTruckReportData; let i = index">
+                      <td>{{ t.TruckName }}</td>
+                      <td>{{ "$" + t.Rate.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                      <td class="text-end">Total</td>
+                      <td>{{ "$" + regularPayTruckTotal.toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="Norecordfound == true" style="width: 100%;">
+      <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found!</p>
+    </div>
+    <div *ngIf="showLoader" class="d-flex justify-content-center w-100 my-5">
+      <div class="spinner-border text-center" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+</div>
+
+

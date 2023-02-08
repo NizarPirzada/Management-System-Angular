@@ -1,0 +1,428 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col-auto pt-2">
+          <h3 class="page-title">Customers</h3>
+        </div>
+        <div class="col-auto float-end ms-auto">
+          <div class="d-flex">
+            <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_customer"><i class="fa fa-plus"></i>Add
+              Customer</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row filter-row mb-2">
+      <div class="col-lg-2 pt-3 pe-3 ps-3 d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-12 w-100">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" (input)="searchCustomerById($event.target.value)" />
+            <label class="focus-label ticket-label">Code</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 pt-3">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-12 search-button">
+          <a class="btn btn-success w-100" (click)="SearchData()">SEARCH</a>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row pt-4">
+          <div class="w-30 d-flex justify-content-start">
+            <label class="custom-control-label pe-3" for="defaultInline2">Show All </label>
+            <div class="status-toggle ps-3 align-item-right">
+              <input type="checkbox" id="staff_module" class="check" (change)="ShowAllCustomer($event)" />
+              <label for="staff_module" class="checktoggle" style="float: left">checkbox</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+            class="table table-striped table-hover custom-table mb-0 datatable">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+
+                <th>Code</th>
+                <th>Description</th>
+
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr>
+
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound == true && !isLoading">
+              <tr style="width: 100%;">
+
+                <td colspan="4" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading">
+              <tr *ngFor="let item of loopCustomerData; let i = index">
+                <td data-bs-toggle="modal" data-bs-target="#edit_customer" (click)="edit(item.ID)">{{ i + 1 }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_customer" (click)="edit(item.ID)">{{ item.Code }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_customer" (click)="edit(item.ID)">{{ item.Description
+                  }}</td>
+                <td class="text-end">
+                  <div class="dropdown dropdown-action">
+                    <a class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i
+                        class="material-icons">more_vert</i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_customer"
+                        (click)="edit(item.ID)" *ngIf="findResult == 'none'"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_customer"
+                        (click)="edit(item.ID)" [style.display]="findResult"><i class="fa fa-pencil m-r-5"></i> Edit</a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history"
+                        (click)="getHistory(item.ID)"><i class="fa fa-history m-r-5"></i> View History</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="isLoading" class="d-flex justify-content-center mb-5">
+            <!-- <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+
+  <!-- Add customer Modal -->
+  <div id="add_customer" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Customer</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="addCustomer()" [formGroup]="addCustomerForm">
+            <div class="form-group">
+              <label>Customer Code <span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="addCustomerForm.get('Code').invalid && addCustomerForm.get('Code').touched "
+                formControlName="Code" />
+              <div *ngIf="addCustomerForm.get('Code').invalid && addCustomerForm.get('Code').touched">
+                <small class="text-danger"> Customer Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" type="text"
+                [class.invalid]="addCustomerForm.get('Description').invalid && addCustomerForm.get('Description').touched"
+                formControlName="Description"></textarea>
+              <div *ngIf="addCustomerForm.get('Description').invalid && addCustomerForm.get('Description').touched ">
+                <small class="text-danger"> Description is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address 1 <span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="addCustomerForm.get('Address_1').invalid && addCustomerForm.get('Address_1').touched "
+                formControlName="Address_1" />
+              <div *ngIf="addCustomerForm.get('Address_1').invalid && addCustomerForm.get('Address_1').touched ">
+                <small class="text-danger"> Address 1 is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address 2 <span class="text-danger"></span></label>
+              <input class="form-control" type="text" formControlName="Address_2" />
+            </div>
+            <div class="form-group">
+              <label>City<span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="addCustomerForm.get('City').invalid && addCustomerForm.get('City').touched "
+                formControlName="City" />
+              <div *ngIf="addCustomerForm.get('City').invalid && addCustomerForm.get('City').touched">
+                <small class="text-danger"> City is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>State<span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="addCustomerForm.get('State').invalid && addCustomerForm.get('State').touched "
+                formControlName="State" />
+              <div *ngIf="addCustomerForm.get('State').invalid && addCustomerForm.get('State').touched">
+                <small class="text-danger"> State is required</small>
+              </div>
+              <div *ngIf="addCustomerForm.get('State').invalid && addCustomerForm.get('State').dirty ">
+                <small class="text-danger"> Please Enter State Alpha Code</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Zip Code<span class="text-danger">*</span></label>
+              <input class="form-control" (keypress)="keyPress($event)" type="text"
+                [class.invalid]="addCustomerForm.get('Zip_Code').invalid && addCustomerForm.get('Zip_Code').touched "
+                formControlName="Zip_Code" />
+              <div *ngIf="addCustomerForm.get('Zip_Code').invalid && addCustomerForm.get('Zip_Code').touched ">
+                <small class="text-danger"> Zip Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Phone<span class="text-danger">*</span></label>
+              <input class="form-control" type="text" (keypress)="keyPress($event)"
+                [class.invalid]="addCustomerForm.get('Phone').invalid && addCustomerForm.get('Phone').touched "
+                formControlName="Phone" />
+              <div *ngIf="addCustomerForm.get('Phone').invalid && addCustomerForm.get('Phone').touched ">
+                <small class="text-danger"> Phone is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Fax<span class="text-danger"></span></label>
+              <input class="form-control" (keypress)="keyPress($event)" type="text" formControlName="Fax" />
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-md-3">Set as Inactive</label>
+
+              <div class="status-toggle col-sm-4 col-md-3 align-items-left">
+                <input type="checkbox" id="staff_module1" class="check" formControlName="IsInActive" />
+                <label for="staff_module1" class="checktoggle" style="float: left">checkbox</label>
+              </div>
+            </div>
+
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Add customer Modal -->
+
+  <!-- Edit customer Modal -->
+  <div id="edit_customer" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Customer</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="editCustomer()" [formGroup]="editCustomerForm">
+            <div class="form-group">
+              <label>Customer Code <span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="editCustomerForm.get('Code').invalid && editCustomerForm.get('Code').touched"
+                formControlName="Code" />
+              <div *ngIf="editCustomerForm.get('Code').invalid && editCustomerForm.get('Code').touched">
+                <small *ngIf="editCustomerForm.get('Code').invalid && editCustomerForm.get('Code').touched"
+                  class="text-danger"> Customer Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description <span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="editCustomerForm.get('Description').invalid && editCustomerForm.get('Description').touched"
+                formControlName="Description" />
+              <div *ngIf="editCustomerForm.get('Description').invalid && editCustomerForm.get('Description').touched">
+                <small
+                  *ngIf="editCustomerForm.get('Description').invalid && editCustomerForm.get('Description').touched"
+                  class="text-danger"> Description is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address 1 <span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="editCustomerForm.get('Address_1').invalid && editCustomerForm.get('Address_1').touched"
+                formControlName="Address_1" />
+              <div *ngIf="editCustomerForm.get('Address_1').invalid && editCustomerForm.get('Address_1').touched">
+                <small *ngIf="editCustomerForm.get('Address_1').invalid && editCustomerForm.get('Address_1').touched"
+                  class="text-danger"> Address 1 is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Address 2 <span class="text-danger"></span></label>
+              <input class="form-control" type="text" formControlName="Address_2" />
+            </div>
+            <div class="form-group">
+              <label>City<span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="editCustomerForm.get('City').invalid && editCustomerForm.get('City').touched"
+                formControlName="City" />
+              <div *ngIf="editCustomerForm.get('City').invalid && editCustomerForm.get('City').touched">
+                <small *ngIf="editCustomerForm.get('City').invalid && editCustomerForm.get('City').touched"
+                  class="text-danger"> City is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>State<span class="text-danger">*</span></label>
+              <input class="form-control" type="text"
+                [class.invalid]="editCustomerForm.get('State').invalid && editCustomerForm.get('State').touched"
+                formControlName="State" />
+              <div *ngIf="editCustomerForm.get('State').invalid && editCustomerForm.get('State').touched">
+                <small *ngIf="editCustomerForm.get('State').invalid && editCustomerForm.get('State').touched"
+                  class="text-danger"> State is required</small>
+              </div>
+              <div
+                *ngIf="editCustomerForm.get('State').invalid && (editCustomerForm.get('State').dirty || isAddFormSubmitted)">
+                <small class="text-danger"> Please Enter State Alpha Code</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Zip Code<span class="text-danger">*</span></label>
+              <input class="form-control" (keypress)="keyPress($event)" type="text"
+                [class.invalid]="editCustomerForm.get('Zip_Code').invalid && editCustomerForm.get('Zip_Code').touched"
+                formControlName="Zip_Code" />
+              <div *ngIf="editCustomerForm.get('Zip_Code').invalid && editCustomerForm.get('Zip_Code').touched">
+                <small *ngIf="editCustomerForm.get('Zip_Code').invalid && editCustomerForm.get('Zip_Code').touched"
+                  class="text-danger"> Zip Code is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Phone<span class="text-danger">*</span></label>
+              <input class="form-control" type="text" (keypress)="keyPress($event)"
+                [class.invalid]="editCustomerForm.get('Phone').invalid && editCustomerForm.get('Phone').touched"
+                formControlName="Phone" />
+              <div *ngIf="editCustomerForm.get('Phone').invalid && editCustomerForm.get('Phone').touched">
+                <small *ngIf="editCustomerForm.get('Phone').invalid && editCustomerForm.get('Phone').touched"
+                  class="text-danger"> Phone is required</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Fax<span class="text-danger"></span></label>
+              <input class="form-control" (keypress)="keyPress($event)" type="text" formControlName="Fax" />
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-4 col-md-3">Set as Inactive</label>
+
+              <div class="status-toggle col-sm-4 col-md-3 align-items-left">
+                <input type="checkbox" id="staff_module1" class="check" formControlName="IsInActive" />
+                <label for="staff_module1" class="checktoggle" style="float: left">checkbox</label>
+              </div>
+            </div>
+
+            <div class="submit-section">
+              <button class="btn btn-primary submit-btn" type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Edit customer Modal -->
+
+  <!-- Delete customer Modal -->
+  <div class="modal custom-modal fade" id="delete_customer" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete Customer</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+          <div class="modal-btn delete-action">
+            <div class="row">
+              <div class="col-6">
+                <a class="btn btn-primary continue-btn" (click)="deleteCustomer()">Delete</a>
+              </div>
+              <div class="col-6">
+                <a data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete customer Modal -->
+
+  <!-- History Modal -->
+  <div id="view_history" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered history-modal" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">History</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-striped custom-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px">#</th>
+                      <th>Customer ID</th>
+                      <th>Code</th>
+                      <th>Description</th>
+                      <th>Address 1</th>
+                      <th>Address 2</th>
+                      <th>City</th>
+                      <th>State</th>
+                      <th>Zip Code</th>
+                      <th>Phone</th>
+                      <th>Fax</th>
+                      <th>Active</th>
+                      <th>Updated By</th>
+                      <th>Last Update</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of LoopHistoryData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.Customer_ID }}</td>
+                      <td>{{ item.Code }}</td>
+                      <td>{{ item.Description }}</td>
+                      <td>{{ item.Address_1 }}</td>
+                      <td>{{ item.Address_2 }}</td>
+                      <td>{{ item.City }}</td>
+                      <td>{{ item.State }}</td>
+                      <td>{{ item.Zip_Code }}</td>
+                      <td>{{ item.Phone }}</td>
+                      <td>{{ item.Fax }}</td>
+                      <td>{{ item.Is_InActive }}</td>
+                      <td>{{ item.Updated_By }}</td>
+                      <td>{{ item.Last_Updated_Date | date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /History Modal -->
+</div>

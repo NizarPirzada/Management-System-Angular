@@ -1,0 +1,107 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-inner slimscroll">
+    <perfect-scrollbar [scrollIndicators]="false">
+      <div id="sidebar-menu" class="sidebar-menu">
+        <ul *ngIf="sidebarMenus.default">
+          <li class="menu-title">
+            <span>Main</span>
+          </li>
+          <!-- Custom Routes Start -->
+          <li class="submenu">
+            <a href="javascript:" [ngClass]="{ subdrop: urlComplete.mainUrl === 'tickets' }">
+              <i class="la la-ticket"></i>
+              <span>Tickets</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <ul style="display: none" [ngStyle]="{ display: urlComplete.mainUrl === 'tickets' || urlComplete.mainUrl === 'invoice' ? 'block' : 'none' }">
+              <li routerLink="/tickets"><a [ngClass]="{ active: urlComplete.mainUrl === 'tickets' }" href="javascript:">Tickets</a></li>
+
+              <li routerLink="/invoice"><a [ngClass]="{ active: urlComplete.mainUrl === 'invoice' }" href="javascript:">Ticket to Invoice</a></li>
+            </ul>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'manageinvoice' }">
+            <a routerLink="/manageinvoice"><i class="la la-file-invoice"></i> <span>Manage Invoices</span></a>
+          </li>
+          <li class="submenu">
+            <a href="javascript:" [ngClass]="{ subdrop: urlComplete.mainUrl === 'createpayments' }">
+              <i class="la la-money"></i>
+              <span>Payments</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <ul style="display: none" [ngStyle]="{ display: urlComplete.mainUrl === 'createpayments' || urlComplete.mainUrl === 'mark-payments' ? 'block' : 'none' }">
+              <li routerLink="/createpayments"><a [ngClass]="{ active: urlComplete.mainUrl === 'createpayments' }" href="javascript:">Create Payments</a></li>
+              <li routerLink="/mark-payments"><a [ngClass]="{ active: urlComplete.mainUrl === 'mark-payments' }" href="javascript:">Mark Invoice For Payment</a></li>
+            </ul>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'jobs' }">
+            <a routerLink="/jobs"><i class="la la-briefcase"></i> <span>Jobs</span></a>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'customers' }">
+            <a routerLink="/customers"><i class="la la-users"></i> <span>Customers</span></a>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'drivers' }">
+            <a routerLink="/drivers"><i class="la la-user-alt"></i> <span>Drivers</span></a>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'products' }">
+            <a routerLink="/products"><i class="la la-cube"></i> <span>Products</span></a>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'trucks' }">
+            <a routerLink="/trucks"><i class="la la-truck"></i> <span>Trucks</span></a>
+          </li>
+          <li *ngIf="userRole === 'Admin'" [ngClass]="{ active: urlComplete.subUrl === 'manage-access' }">
+            <a routerLink="/admin/manage-access">
+              <i class="la la-universal-access"></i>
+              <span>Manage Access</span>
+            </a>
+          </li>
+          <li [ngClass]="{ active: urlComplete.mainUrl === 'company' }">
+            <a routerLink="/company"><i class="la la-building"></i> <span>Company</span></a>
+          </li>
+          <li class="submenu">
+            <a href="javascript:" [ngClass]="{ subdrop: urlComplete.mainUrl === 'report' }">
+              <i class="la la-file-invoice"></i>
+              <span>Reports</span>
+              <span class="menu-arrow"></span>
+            </a>
+            <ul [ngStyle]="urlComplete.mainUrl === 'report' ? { display: 'block' } : { display: 'none' }">
+              <li routerLink="/report/truck-hire-payments">
+                <a [ngClass]="{ active: urlComplete.subUrl === 'truck-hire-payments' }" href="javascript:">Truck Hire Payments</a>
+              </li>
+              <li routerLink="/report/money-out">
+                <a [ngClass]="{ active: urlComplete.subUrl === 'money-out' }" href="javascript:">Money-Out Report</a>
+              </li>
+            </ul>
+          </li>
+          <!-- Custom Routes End -->
+        </ul>
+        <ul *ngIf="sidebarMenus.chat">
+          <li routerLink="/dashboard/admin">
+            <a href="javascript:"><i class="la la-home"></i> <span>Back to Home</span></a>
+          </li>
+          <li class="menu-title">
+            <span>Chat Groups</span> <a href="javascript:" data-bs-toggle="modal" data-bs-target="#add_group"><i class="la la-plus"></i></a>
+          </li>
+          <li>
+            <a href="javascript:" *ngFor="let item of groups.total">
+              <span class="chat-avatar-sm user-img">
+                <img class="rounded-circle" alt="" src="assets/img/profiles/avatar-5.jpg" />
+              </span>
+              <span class="chat-user">#{{ item | titlecase }}</span>
+            </a>
+          </li>
+          <li class="menu-title">
+            Direct Chats <a data-bs-toggle="modal" data-bs-target="#add_chat_user"><i class="la la-plus"></i></a>
+          </li>
+          <li [ngClass]="{ active: members.active == item.name }" (click)="setActive(item.name)" *ngFor="let item of members.total">
+            <a href="javascript:">
+              <span class="chat-avatar-sm user-img"> <img class="rounded-circle" alt="" src="assets/img/profiles/avatar-5.jpg" /><span class="status online"></span> </span>
+              <span class="chat-user">{{ item.name }}</span> <span class="badge rounded-pill bg-danger" [hidden]="item.count < 1">{{ item.count }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </perfect-scrollbar>
+  </div>
+</div>
+<!-- /Sidebar -->

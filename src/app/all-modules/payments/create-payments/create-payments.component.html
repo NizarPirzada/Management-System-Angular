@@ -1,0 +1,106 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title">Create Payments</h3>
+        </div>
+        <div class="col pt-1">
+          <div class="col-auto float-end ms-auto">
+            <button class="btn add-btn" [disabled]="selectedItemIDs.length > 0 ? null: true" (click)="generateReportHandler()"><i class="fa fa-plus"></i> Generate Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <!-- Search Filter -->
+    <div class="row mt-3 mb-2">
+      <div class="col-sm-4 col-md-2">
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="driverTypeEmployee" name="driverTypeEmployee" [(ngModel)]="driverTypeFilter" [value]="1" />
+          <label for="driverTypeEmployee" class="custom-control-label">Employee</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-2">
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" id="driverTypeTruckHire" name="driverTypeTruckHire" [(ngModel)]="driverTypeFilter" [value]="2" />
+          <label for="driverTypeTruckHire" class="custom-control-label">Truck Hire</label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row filter-row">
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" [(ngModel)]="startDateFilter" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+          </div>
+          <label class="focus-label">Start Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" [(ngModel)]="endDateFilter" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+          </div>
+          <label class="focus-label">End Date</label>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <button class="btn btn-success btn-search w-100" (click)="getPayableTicketItems()" [disabled]="!!startDateFilter && !!endDateFilter && !!driverTypeFilter ? null : true">SEARCH</button>
+      </div>
+    </div>
+    <!-- /Search Filter -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped custom-table mb-0 datatable">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Ticket #</th>
+                <th>Driver</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Date</th>
+                <th class="text-end">Select</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="!isLoading">
+              <tr *ngFor="let item of ticketItems; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.TicketNumber }}</td>
+                <td>{{ item.DriverName }}</td>
+                <td>{{ item.ProductDescription }}</td>
+                <td>{{ item.Quantity }}</td>
+                <td>{{ item.Price.toFixed(2) }}</td>
+                <td>{{ item.Date == "[object Object]" ? "" : (item.Date | date) }}</td>
+                <td class="text-end">
+                  <label class="label">
+                    <input class="label__checkbox" type="checkbox" (change)="onSelectRow($event.target.checked, item.ID)" />
+                    <span class="label__text">
+                      <span class="label__check">
+                        <i class="fa fa-check icon"></i>
+                      </span>
+                    </span>
+                  </label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="isLoading" class="d-flex justify-content-center text-center mb-5">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+</div>

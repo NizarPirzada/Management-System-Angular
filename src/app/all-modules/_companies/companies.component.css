@@ -1,0 +1,69 @@
+.table-striped.table-hover>tbody>tr:hover>td, 
+.table-striped.table-hover>tbody>tr:hover>th {
+  background-color: #EFF6FC;
+  /* color: white; */
+}
+.content {
+	padding: 30px;
+}
+.companytable{
+	margin-bottom: 5rem !important;
+}
+.file-container{
+	cursor: pointer;
+	width:350px;
+	border: 2px #ccc dotted;
+	background-color: transparent;
+	height: 113px;
+}
+.logofile{
+	opacity: 0;
+    padding: 4rem 1rem;
+    width: 350px;
+    z-index: 99 !important;
+    cursor: pointer;
+    position: absolute;
+    bottom: 18.2%;
+}
+.logoimg{
+	width: 100px;
+    height: auto;
+    position: absolute;
+    bottom: 22.4%;
+    right: 10rem;
+    z-index: 1;
+}
+.history-modal{
+    max-width: 75vw !important;
+}
+a{
+    cursor: pointer;
+}
+.filter-row .btn {
+    padding: 7px !important;
+    min-height: 40px !important;
+  }
+  .form-focus .form-control {
+    height: 41px !important;
+    padding: 14px 12px 6px;
+  }
+  .focus-label{
+	opacity: 1;
+    font-weight: 300;
+    top: -20px !important;
+    font-size: 12px !important;
+    z-index: 1 !important;
+}
+.addbtn{
+    padding-top: 0.1rem;
+  }
+
+  .main-title{
+    padding-top: 0.45rem;
+}
+.main-title{
+  padding-top: 0.45rem;
+}
+td{
+  cursor: pointer;
+}

@@ -1,0 +1,284 @@
+.content {
+	padding: 30px;
+}
+select:disabled{
+
+  cursor : default !important;
+}
+input:read-only{
+
+  cursor : default !important;
+}
+.line-item
+{
+	width:1px;
+	padding: 0 10px;
+	white-space: nowrap;
+	color: #8e9297;
+}
+.date
+{
+	color: #c1c1c1 !important;
+}
+.table thead th
+{
+	font-weight: bold;
+}
+.calendar
+{
+	padding: 0 0.4rem !important;
+    font-size: 1.8rem !important;
+	height: 100%;
+	border-color: #ced4da !important;
+}
+.line-btn
+{
+	padding: 0.1rem 0.4rem;
+	position: relative;
+	top: 1.8rem;
+}
+td{
+  cursor: pointer;
+}
+.non-red{
+    background-color: #fff;
+    height: 32vh;
+    width: 93%;
+    position: absolute;
+    z-index: 2;
+}
+
+
+.table-responsive::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.table-responsive::-webkit-scrollbar:vertical {
+    width: 12px;
+}
+
+.table-responsive::-webkit-scrollbar:horizontal {
+    height: 12px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .5);
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+.or-col
+{
+	position: relative;
+    top: 8px;
+}
+.form-focus
+{
+	margin-bottom: 0 !important;
+}
+.or-col h2
+{
+	color: #dee2e6;
+}
+.border-custom
+{
+	border: 1px solid #dee2e6;
+}
+
+.animationRights{
+  animation-name: animaty;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1.5s;
+}
+@keyframes animaty {
+  0% {opacity : 0;
+
+    transform: translateX(50%);}
+
+  100% {opacity : 1;
+    transform: translateX(0);}
+}
+.addTicketclass{
+  overflow: hidden;
+}
+.animationRight{
+  animation-name: animateer;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 0.7s;
+}
+@keyframes animateer {
+  0% {opacity : 1;
+
+    transform-origin: left;
+    transform :translate(173%, -68%) rotate(90deg);
+    /* transform :translateX(100%); */
+     }
+
+     /* 50%{
+      transform-origin: left; // not used
+      transform: translate(50%,-20%) rotate(45deg);
+     } */
+  100% {opacity : 1;
+    transform-origin: left;
+    /* transform :translateX(0%); */
+    transform: translate(0% , 0%) rotate(0deg);
+    }
+    }
+
+
+
+.search-button
+{
+	width: 100% !important;
+}
+.ticket-label{
+	opacity: 1;
+    font-weight: 300;
+    top: -14px !important;
+    font-size: 12px !important;
+    z-index: 1 !important;
+}
+.progress .progress-bar {
+    animation-name: animateBar;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 2s;
+}
+@keyframes animateBar {
+    0% {transform: translateX(-100%);}
+    100% {transform: translateX(0);}
+}
+.history-modal{
+    max-width: 90vw !important;
+}
+a{
+    cursor: pointer;
+}
+.tablelastrow{
+	margin-bottom: 7rem !important;
+}
+.checktoggle {
+  background-color: #495057;
+}
+
+.page-header{
+  margin-bottom: 5px !important;
+}
+
+.filter-row .btn {
+    padding: 7px !important;
+    min-height: 40px !important;
+  }
+  .form-focus .form-control {
+    height: 41px !important;
+    padding: 14px 12px 6px;
+  }
+  .focus-label{
+	opacity: 1;
+    font-weight: 300;
+    top: -20px !important;
+    font-size: 12px !important;
+    z-index: 1 !important;
+}
+.main-title{
+    padding-top: 0.45rem;
+}
+.addbtn{
+    margin-top:0.1rem;
+}
+
+
+
+@keyframes growProgressBar {
+    0%, 33% { --pgPercentage: 0; }
+    100% { --pgPercentage: var(--value); }
+  }
+
+  @property --pgPercentage {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+
+  .green {
+    --size: 3rem;
+    --fg: rgb(27, 148, 16);
+    --bg: #e9ecef;
+    --pgPercentage: var(--value);
+    animation: growProgressBar 3s 1 forwards;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(closest-side, white 80%, transparent 0 99.9%, white 0),
+      conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0)
+      ;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: calc(var(--size) / 5);
+    color: var(--fg);
+  }
+ 
+  .green::before {
+    counter-reset: percentage var(--value);
+    content: counter(percentage) '%';
+  }
+
+
+ .red {
+    --size: 3rem;
+    --fg: rgb(233, 8, 57);
+    --bg: #e9ecef;
+    --pgPercentage: var(--value);
+    animation: growProgressBar 3s 1 forwards;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(closest-side, white 80%, transparent 0 99.9%, white 0),
+      conic-gradient(var(--fg) calc(var(--pgPercentage) * 1%), var(--bg) 0)
+      ;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: calc(var(--size) / 5);
+    color: var(--fg);
+  }
+
+  .red::before {
+    counter-reset: percentage var(--value);
+    content: counter(percentage) '%';
+  }
+  body{
+   font-family: 'CircularStd' , sans-serif;
+  }
+
+select {
+  outline: none;
+  border-radius: none;
+
+  
+}
+option{
+  text-align: start;
+}
+.form-control{
+  height: 35px!important;
+  padding: 5px;
+}
+/* .for-hover:hover{
+  background-color: #f7f7f7;
+} */
+
+.table-striped.table-hover>tbody>tr:hover>td, 
+.table-striped.table-hover>tbody>tr:hover>th {
+  background-color: #EFF6FC;
+  /* color: white; */
+}

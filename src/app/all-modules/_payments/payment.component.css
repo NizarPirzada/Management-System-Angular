@@ -1,0 +1,39 @@
+.table-striped.table-hover>tbody>tr:hover>td, 
+.table-striped.table-hover>tbody>tr:hover>th {
+  background-color: #EFF6FC;
+  /* color: white; */
+}
+.content {
+	padding: 30px;
+}
+
+.history-modal{
+    max-width: 75vw !important;
+}
+a{
+    cursor: pointer;
+}
+.filter-row .btn {
+    padding: 7px !important;
+    min-height: 40px !important;
+  }
+  .form-focus .form-control {
+    height: 41px !important;
+    padding: 14px 12px 6px;
+  }
+  .focus-label{
+	opacity: 1;
+    font-weight: 300;
+    top: -20px !important;
+    font-size: 12px !important;
+    z-index: 1 !important;
+}
+.addbtn{
+    padding-top: 0.1rem;
+  }
+  .btn{
+    padding: 0.475rem 0.75rem;
+  }
+  .tablelastrow{
+    margin-bottom: 7rem !important;
+  }

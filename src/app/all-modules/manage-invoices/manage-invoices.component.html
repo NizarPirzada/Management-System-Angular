@@ -1,0 +1,193 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title pt-2">Manage Invoices</h3>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="row filter-row">
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus select-focus">
+          <select [ngModel]="filter" (ngModelChange)="onFilterChange($event)" class="form-select floating form-control">
+            <option value="1">Paid Invoices</option>
+            <option value="2">Void Invoices</option>
+            <option value="3">Unpaid Invoices</option>
+            <option value="4">Funded Invoices</option>
+            <option value="5">Unfunded Invoices</option>
+          </select>
+          <label class="focus-label">Filters</label>
+        </div>
+      </div>
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" [(ngModel)]="startDateFilter" />
+          </div>
+          <label class="focus-label">Creation Start Date</label>
+        </div>
+      </div>
+      <div class="col-sm-3 col-md-3">
+        <div class="form-group form-focus">
+          <div class="cal-icon">
+            <input type="text" class="form-control floating datetimepicker" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" [(ngModel)]="endDateFilter" />
+          </div>
+          <label class="focus-label">Creation End Date</label>
+        </div>
+      </div>
+      <div class="col-sm-3 col-md-3">
+        <button class="btn btn-success w-100" (click)="getInvoices()">SEARCH</button>
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover custom-table mb-0">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Invoice Number</th>
+                <th>Customer</th>
+                <th>Job</th>
+                <th>Creation Date</th>
+                <th>Value</th>
+                <th class="text-end" style="width: 115px">Mark as Void</th>
+                <th class="text-end" style="width: 145px">Mark as Funded</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="!!isLoading">
+              <tr>
+                <td colspan="8" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading && !!noRecordFound">
+              <tr>
+                <td colspan="8" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading && !noRecordFound">
+              <tr *ngFor="let invoice of invoices; let i = index">
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ currentPage * pageSize + i + 1 }}</td>
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ invoice.Invoice_Number }}</td>
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ invoice.CustomerDescription }}</td>
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ invoice.JobDescription }}</td>
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ invoice.Creation_Date | date }}</td>
+                <td (click)="viewInvoice(invoice.JobID, invoice.JobProductID, invoice.Invoice_ID)">{{ "$" + invoice.Total_Due }}</td>
+                <td class="text-end">
+                  <label class="label">
+                    <input class="label__checkbox" type="checkbox" [checked]="invoice.InvoiceStatusId == 2 ? true : false" [disabled]="invoice.InvoiceStatusId == 2 ? !isChecked : isChecked" (change)="openConfirmationModal(invoice.Invoice_ID, $event.currentTarget.checked)" data-bs-toggle="modal" data-bs-target="#confirm-void-modal" />
+                    <span class="label__text">
+                      <span class="label__check">
+                        <i class="fa fa-check icon"></i>
+                      </span>
+                    </span>
+                  </label>
+                </td>
+                <td class="text-end">
+                  <label class="label">
+                    <input class="label__checkbox" type="checkbox" [disabled]="invoice.InvoiceStatusId == 2 ? !isChecked : isChecked" [checked]="invoice.IsFunded == true ? true : false" (change)="openConfirmationModal(invoice.Invoice_ID, $event.currentTarget.checked)" data-bs-toggle="modal" data-bs-target="#confirm-funded-modal" />
+                    <span class="label__text">
+                      <span class="label__check">
+                        <i class="fa fa-check icon"></i>
+                      </span>
+                    </span>
+                  </label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="totalRecords > 0" class="text-start">
+    <span class="text-muted ml-3 d-none d-md-inline-block">Showing {{ currentPage * pageSize + 1 }} to {{ showSum }} of {{ totalRecords }} entries </span>
+  </div>
+
+  <!-- pagination starts -->
+  <div class="text-end" *ngIf="totalRecords > pageSize">
+    <ul class="pagination" style="float: right">
+      <li class="page-item">
+        <a class="page-link" (click)="currentPage > 0 ? changeTicketPage(currentPage - 1) : ''" tabindex="-1">Previous</a>
+      </li>
+      <li *ngFor="let page of [].constructor(totalPages); let i = index" class="page-item" [ngClass]="{ active: currentPage === i }">
+        <a *ngIf="i - currentPage <= 4 && i - currentPage >= -2" (click)="changeTicketPage(i)" class="page-link">{{ i + 1 }}</a>
+      </li>
+      <!-- (i - currentPage)  < 4 -->
+      <li class="page-item">
+        <a class="page-link" (click)="totalPages !== currentPage + 1 ? changeTicketPage(currentPage + 1) : ''">Next</a>
+      </li>
+    </ul>
+  </div>
+  <!-- pagination ends -->
+  <!-- /Page Content -->
+</div>
+
+<!-- Confirm void modal -->
+<div id="confirm-void-modal" class="modal custom-modal fade" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 400px !important">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+        <button type="button" class="close" (click)="cancel()" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Are you sure?</h3>
+      </div>
+      <div class="modal-footer" style="justify-content: end !important">
+        <button type="button" class="btn btn-success" (click)="markAsVoidHandler()" data-bs-dismiss="modal">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="cancel()" data-bs-dismiss="modal" aria-label="Close">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Confirm void modal -->
+
+<!-- Confirm funded modal -->
+<div id="confirm-funded-modal" class="modal custom-modal fade" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 400px !important">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+        <button type="button" class="close" (click)="cancel()" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h3>Are you sure?</h3>
+      </div>
+      <div class="modal-footer" style="justify-content: end !important">
+        <button type="button" class="btn btn-success" (click)="markAsFundedHandler()" data-bs-dismiss="modal">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="cancel()" data-bs-dismiss="modal" aria-label="Close">No</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /Confirm funded modal -->

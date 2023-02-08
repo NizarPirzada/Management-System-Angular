@@ -1,0 +1,726 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header pb-4">
+      <div class="row align-items-center">
+        <div class="col">
+          <h3 class="page-title main-title">Tickets</h3>
+        </div>
+        <div class="col-auto float-end ms-auto">
+          <a class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_ticket"><i class="fa fa-plus"></i> Add Ticket</a>
+        </div>
+      </div>
+    </div>
+    <!-- /Page Header -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card-group pb-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="d-block">{{ ticketSummaryData[3].name }}</span>
+                </div>
+                <div>
+                  <div role="progressbar" [ngClass]="{ green: ticketSummaryData[3].perc > 20, red: ticketSummaryData[3].perc <= 20 }" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="--value:{{ box1valuecount }}"></div>
+                </div>
+              </div>
+              <h3 class="mb-3">{{ NewTicketcount }}</h3>
+              <div class="progress mb-2" style="height: 5px">
+                <div class="progress-bar bg-primary" role="progressbar" [ngStyle]="{ width: ticketSummaryData[3].counts + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="d-block">{{ ticketSummaryData[0].name }}</span>
+                </div>
+                <div>
+                  <div role="progressbar" [ngClass]="{ green: ticketSummaryData[0].perc > 20, red: ticketSummaryData[0].perc <= 20 }" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="--value:{{ box2valuecount }}"></div>
+                </div>
+              </div>
+              <h3 class="mb-3">{{ InoviceCreatecount }}</h3>
+              <div class="progress mb-2" style="height: 5px">
+                <div class="progress-bar bg-primary" role="progressbar" [ngStyle]="{ width: ticketSummaryData[0].counts + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="d-block">{{ ticketSummaryData[1].name }}</span>
+                </div>
+                <div>
+                  <div role="progressbar" [ngClass]="{ green: ticketSummaryData[1].perc > 20, red: ticketSummaryData[1].perc <= 20 }" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="--value:{{ box3valuecount }}"></div>
+                </div>
+              </div>
+              <h3 class="mb-3">{{ PaidCount }}</h3>
+              <div class="progress mb-2" style="height: 5px">
+                <div class="progress-bar bg-primary" role="progressbar" [ngStyle]="{ width: ticketSummaryData[1].counts + '%' }"></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span class="d-block">{{ ticketSummaryData[2].name }}</span>
+                </div>
+                <div>
+                  <div role="progressbar" [ngClass]="{ green: ticketSummaryData[2].perc > 20, red: ticketSummaryData[2].perc <= 20 }" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="--value:{{ box4valuecount }}"></div>
+                </div>
+              </div>
+              <h3 class="mb-3">{{ PaymentCreateCount }}</h3>
+              <div class="progress mb-2" style="height: 5px">
+                <div class="progress-bar bg-primary" role="progressbar" [ngStyle]="{ width: ticketSummaryData[2].counts + '%' }"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Filter -->
+    <div class="row filter-row justify-content-center">
+      <div class="col-lg-7 d-flex py-3">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-12 me-2">
+          <div class="form-group form-focus select-focus">
+            <select class="form-select floating form-control" (change)="getJobByCustomerID($event.target.value)" style="padding-right: 2rem">
+              <option value="">-- Select --</option>
+              <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                {{ data.Code_Description }}
+              </option>
+            </select>
+            <label class="focus-label">Customer</label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-12 ms-2">
+          <div class="form-group form-focus select-focus">
+            <select class="form-select floating form-control" (change)="searchJob($event.target.value)" style="padding-right: 2rem">
+              <option value="">-- Select --</option>
+              <option [value]="data.ID" *ngFor="let data of loopJobData">
+                {{ data.Code_Description }}
+              </option>
+            </select>
+            <label class="focus-label">Job</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-1 text-center or-col p-3">
+        <h2>OR</h2>
+      </div>
+      <div class="col-lg-2 py-3 pe-3 ps-0 d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-12 w-100">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" (input)="searchTicket($event.target.value)" />
+            <label class="focus-label ticket-label">Ticket Number</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 p-3">
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-12 search-button">
+          <a class="btn btn-success w-100" (click)="SearchData()">Search</a>
+        </div>
+      </div>
+    </div>
+    <!-- /Search Filter -->
+
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <div class="row pt-2">
+          <div class="d-flex justify-content-start">
+            <label class="custom-control-label pe-3" for="ticket_filter">Show Invoiced Tickets</label>
+            <div class="status-toggle align-item-right">
+              <input type="checkbox" id="ticket_filter" class="check" [(ngModel)]="invoiced" (change)="ticketFilterHandler()" />
+              <label for="ticket_filter" class="checktoggle" style="float: left">checkbox</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-start align-items-center pt-2" style="flex-direction: row; gap: 0.5rem">
+      <p>Show</p>
+      <select class="text-start dropdown py-1 form-control select" style="width: 7%; border-radius: 0%; margin-bottom: 18px" name="showList" [(ngModel)]="showList" (ngModelChange)="dataChanged($event)">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+      <p>entries</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive tableFixHead">
+          <table class="table table-striped custom-table mb-0 datatable table-hover">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Ticket Number</th>
+                <th>Customer</th>
+                <th>Job</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Total Due</th>
+                <th>Creation Date</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr>
+                <td colspan="9" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound === true && !isLoading">
+              <tr style="width: 100%">
+                <td colspan="9" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="Norecordfound === false && !isLoading">
+              <tr *ngFor="let item of loopTicketData; let i = index" class="for-hover">
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ currentpage * limit + i + 1 }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Ticket_Number }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Customer_Description }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Job_Description }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Product_Description }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Total }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ "$" + item.Total_Due }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID, item.Qb_Invoice_Number)">{{ item.Creation_Date | date }}</td>
+                <td class="text-end">
+                  <div class="dropdown dropdown-action">
+                    <a class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item edit" data-bs-toggle="modal" data-bs-target="#edit_ticket" (click)="edit(item.Ticket_ID)"><i class="fa fa-pencil m-r-5"></i> Edit </a>
+                      <a *ngIf="!this.invoiced" class="dropdown-item edit" data-bs-toggle="modal" data-bs-target="#delete_ticket" (click)="openDeleteTicketModalHandler(item.Ticket_ID)"><i class="fa fa-remove m-r-5"></i> Delete </a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history" (click)="getHistory(item.Ticket_ID)"><i class="fa fa-history m-r-5"></i> View History</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="totalRecords > 0" class="text-start">
+      <span class="text-muted d-none d-md-inline-block">Showing {{ currentpage * limit + 1 }} to {{ showSum }} of {{ totalRecords }} entries </span>
+    </div>
+
+    <!-- pagination starts -->
+    <div class="text-end" *ngIf="totalRecords > limit">
+      <ul class="pagination" style="float: right">
+        <li class="page-item">
+          <a class="page-link" (click)="currentpage > 0 ? changeTicketPage(currentpage - 1) : ''" tabindex="-1">Previous</a>
+        </li>
+        <li *ngFor="let page of [].constructor(totalpages); let i = index" class="page-item" [ngClass]="{ active: currentpage === i }">
+          <a *ngIf="i - currentpage <= 4 && i - currentpage >= -2" (click)="changeTicketPage(i)" class="page-link">{{ i + 1 }}</a>
+        </li>
+        <!-- (i - currentpage)  < 4 -->
+        <li class="page-item">
+          <a class="page-link" (click)="totalpages !== currentpage + 1 ? changeTicketPage(currentpage + 1) : ''">Next</a>
+        </li>
+      </ul>
+    </div>
+    <!-- pagination ends -->
+  </div>
+  <!--/Page Content-->
+
+  <!-- Delete ticket modal -->
+  <div id="delete_ticket" class="modal custom-modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete Ticket</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: end !important">
+          <button type="button" class="btn btn-success" (click)="deleteTicket()" data-bs-dismiss="modal">Yes</button>
+          <button type="button" class="btn btn-primary" (click)="closeModal()" data-bs-dismiss="modal" aria-label="Close">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete ticket modal -->
+
+  <!-- Add ticket Modal -->
+  <div id="add_ticket" class="modal custom-modal fade  {{ Animationf }} " role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Ticket</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body addTicketclass">
+          <form [formGroup]="addTicketForm" class="">
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Customer<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="addTicketForm.get('customer_ID').invalid && addTicketForm.get('customer_ID').touched" formControlName="customer_ID" (change)="addTicketCustomerChangeHandler($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                  <div *ngIf="addTicketForm.get('customer_ID').invalid && addTicketForm.get('customer_ID').touched">
+                    <small *ngIf="addTicketForm.get('customer_ID').invalid && addTicketForm.get('customer_ID').touched" class="text-danger">Customer is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Job<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="addTicketForm.get('job_ID').invalid && addTicketForm.get('job_ID').touched" formControlName="job_ID" (change)="addTicketJobChangeHandler($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopJobData">
+                      {{ data.Code_PO }}
+                    </option>
+                  </select>
+                  <div *ngIf="addTicketForm.get('job_ID').invalid && addTicketForm.get('job_ID').touched">
+                    <small *ngIf="addTicketForm.get('job_ID').invalid && addTicketForm.get('job_ID').touched" class="text-danger"> Job is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Ticket Number <span class="text-danger">*</span></label>
+                  <input class="form-control code" type="text" [class.invalid]="addTicketForm.get('code').invalid && addTicketForm.get('code').touched" formControlName="code" />
+                  <div *ngIf="addTicketForm.get('code').invalid && addTicketForm.get('code').touched">
+                    <small *ngIf="addTicketForm.get('code').invalid && addTicketForm.get('code').touched" class="text-danger">Ticket Number is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Creation Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input class="form-control floating datetimepicker" [value]="currentDate" type="text" bsDatepicker type="text" (bsValueChange)="addTicketDate($event)" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Product<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="addTicketForm.get('product_ID').invalid && addTicketForm.get('product_ID').touched" formControlName="product_ID" (change)="getPricesByProductID($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopProductData">
+                      {{ data.Description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <!--
+              <div class="col-lg-6 col-md-6 pt-4">
+                <div class="form-group justify-content-end d-flex addbtn" *ngIf="addnewTicketvalue == true">
+                  <button class="btn add-btn" (click)="addNewTicket()">
+                    <i class="fa fa-plus"></i>
+                    Add Next Ticket
+                  </button>
+                  <br />
+                </div>
+              </div>
+              -->
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">Line Item</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Truck<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="addTicketForm.get('truck_name').invalid && addTicketForm.get('truck_name').touched" formControlName="truck_name" (change)="getDriverByTruckID($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopTruckData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                  <div *ngIf="addTicketForm.get('truck_name').invalid && addTicketForm.get('truck_name').touched">
+                    <small *ngIf="addTicketForm.get('truck_name').invalid && addTicketForm.get('truck_name').touched" class="text-danger">Truck is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Price <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" (keypress)="keyPress($event)" [class.invalid]="addTicketForm.get('price').invalid && addTicketForm.get('price').touched" formControlName="price" />
+                  <div *ngIf="addTicketForm.get('price').invalid && addTicketForm.get('price').touched">
+                    <small *ngIf="addTicketForm.get('price').invalid && addTicketForm.get('price').touched" class="text-danger">Price is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Driver<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="addTicketForm.get('driver_name').invalid && addTicketForm.get('driver_name').touched" formControlName="driver_name">
+                    <option [value]="data.ID" *ngFor="let data of loopDriverData">
+                      {{ data.Full_Name }}
+                    </option>
+                  </select>
+                  <div *ngIf="addTicketForm.get('driver_name').invalid && addTicketForm.get('driver_name').touched">
+                    <small *ngIf="addTicketForm.get('driver_name').invalid && addTicketForm.get('driver_name').touched" class="text-danger">Driver is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Driver Price <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" (keypress)="keyPress($event)" [class.invalid]="addTicketForm.get('driver_price').invalid && addTicketForm.get('driver_price').touched" formControlName="driver_price" />
+                  <div *ngIf="addTicketForm.get('driver_price').invalid && addTicketForm.get('driver_price').touched">
+                    <small *ngIf="addTicketForm.get('driver_price').invalid && addTicketForm.get('driver_price').touched" class="text-danger">Driver Price is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Quantity <span class="text-danger">*</span></label>
+                  <input class="form-control" type="number" (keypress)="keyPress($event)" [class.invalid]="addTicketForm.get('quantity').invalid && addTicketForm.get('quantity').touched" formControlName="quantity" />
+                  <div *ngIf="addTicketForm.get('quantity').invalid && addTicketForm.get('quantity').touched">
+                    <small *ngIf="addTicketForm.get('quantity').invalid && addTicketForm.get('quantity').touched" class="text-danger">Quantity is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 pt-4">
+                <div class="form-group button-group addbtn">
+                  <button class="btn add-btn ms-1" (click)="addNewTicket()" *ngIf="!!addnewTicketvalue"><i class="fa fa-plus"></i> Next</button>
+                  <button class="btn add-btn ms-1" (click)="addTicket(true)" *ngIf="!addnewTicketvalue"><i class="fa fa-plus"></i> Create Ticket & Next</button>
+                  <button class="btn add-btn" (click)="addTicket(false)"><i class="fa fa-plus"></i> Add Line Item</button>
+                  <br />
+                </div>
+              </div>
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">Ticket Line Item Record</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row my-3">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-striped custom-table mb-0 datatable">
+                    <thead>
+                      <tr>
+                        <th style="width: 30px">#</th>
+                        <th>Ticket ID</th>
+                        <th>Driver</th>
+                        <th>Quantity</th>
+                        <th>Truck</th>
+                        <th>Price</th>
+                        <th>Driver Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of loopTicketLineData; let i = index" (click)="setTicketLineItemDetails(item)">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.Ticket_ID }}</td>
+                        <td>{{ item.Driver_Code }}</td>
+                        <td>{{ item.Quantity }}</td>
+                        <td>{{ item.Truck_Description }}</td>
+                        <td>${{ item.Price_Per_Unit }}</td>
+                        <td>${{ item.Driver_Price_Per_Unit }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Add ticket Modal -->
+
+  <!-- Edit ticket Modal -->
+  <div id="edit_ticket" class="modal custom-modal fade" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Ticket</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="editTicketForm">
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Customer<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="editTicketForm.get('Customer_Description').invalid && editTicketForm.get('Customer_Description').touched" formControlName="Customer_Description" (change)="editTicketCustomerChangeHandler($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                  <div *ngIf="editTicketForm.get('Customer_Description').invalid && editTicketForm.get('Customer_Description').touched">
+                    <small *ngIf="editTicketForm.get('Customer_Description').invalid && editTicketForm.get('Customer_Description').touched" class="text-danger">Customer is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Job<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="editTicketForm.get('Job_Description').invalid && editTicketForm.get('Job_Description').touched" formControlName="Job_Description" (change)="editTicketJobChangeHandler($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopJobData">
+                      {{ data.Code_PO }}
+                    </option>
+                  </select>
+                  <div *ngIf="editTicketForm.get('Job_Description').invalid && editTicketForm.get('Job_Description').touched">
+                    <small *ngIf="editTicketForm.get('Job_Description').invalid && editTicketForm.get('Job_Description').touched" class="text-danger"> Job is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Ticket Number<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="editTicketForm.get('Code').invalid && editTicketForm.get('Code').touched" formControlName="Code" />
+                  <div *ngIf="editTicketForm.get('Code').invalid && editTicketForm.get('Code').touched">
+                    <small *ngIf="editTicketForm.get('Code').invalid && editTicketForm.get('Code').touched" class="text-danger"> Ticket Number is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Creation Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input type="text" class="form-control floating datetimepicker" [class.invalid]="editTicketForm.get('Creation_Date').invalid && editTicketForm.get('Creation_Date').touched" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" formControlName="Creation_Date" />
+                  </div>
+                  <div *ngIf="editTicketForm.get('Creation_Date').invalid && editTicketForm.get('Creation_Date').touched">
+                    <small *ngIf="editTicketForm.get('Creation_Date').invalid && editTicketForm.get('Creation_Date').touched" class="text-danger"> Creation Date is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Product<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="editTicketForm.get('Product_Description').invalid && editTicketForm.get('Product_Description').touched" formControlName="Product_Description">
+                    <option [value]="data.ID" *ngFor="let data of loopProductData">
+                      {{ data.Description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 pt-4" *ngIf="!!this.isTicketEditable">
+                <div class="form-group button-group addbtn">
+                  <button class="btn add-btn" (click)="updateTicket()"><i class="fa fa-plus"></i>Update Ticket</button>
+                  <br />
+                </div>
+              </div>
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">Line Item</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Truck<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="editTicketForm.get('truck_name').invalid && editTicketForm.get('truck_name').touched" formControlName="truck_name" (change)="onTruckChangeInEditModal($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopTruckData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                  <div *ngIf="editTicketForm.get('truck_name').invalid && editTicketForm.get('truck_name').touched">
+                    <small *ngIf="editTicketForm.get('truck_name').invalid && editTicketForm.get('truck_name').touched" class="text-danger">Truck is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Price <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" (keypress)="keyPress($event)" [class.invalid]="editTicketForm.get('price').invalid && editTicketForm.get('price').touched" formControlName="price" />
+                  <div *ngIf="editTicketForm.get('price').invalid && editTicketForm.get('price').touched">
+                    <small *ngIf="editTicketForm.get('price').invalid && editTicketForm.get('price').touched" class="text-danger">Price is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Select Driver<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" [class.invalid]="editTicketForm.get('driver_name').invalid && editTicketForm.get('driver_name').touched" formControlName="driver_name">
+                    <option [value]="data.ID" *ngFor="let data of loopDriverData">
+                      {{ data.Full_Name }}
+                    </option>
+                  </select>
+                  <div *ngIf="editTicketForm.get('driver_name').invalid && editTicketForm.get('driver_name').touched">
+                    <small *ngIf="editTicketForm.get('driver_name').invalid && editTicketForm.get('driver_name').touched" class="text-danger">Driver is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Driver Price <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" (keypress)="keyPress($event)" [class.invalid]="editTicketForm.get('driver_price').invalid && editTicketForm.get('driver_price').touched" formControlName="driver_price" />
+                  <div *ngIf="editTicketForm.get('driver_price').invalid && editTicketForm.get('driver_price').touched">
+                    <small *ngIf="editTicketForm.get('driver_price').invalid && editTicketForm.get('driver_price').touched" class="text-danger">Driver Price is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label> Quantity <span class="text-danger">*</span></label>
+                  <input class="form-control" type="number" (keypress)="keyPress($event)" [class.invalid]="editTicketForm.get('quantity').invalid && editTicketForm.get('quantity').touched" formControlName="quantity" />
+                  <div *ngIf="editTicketForm.get('quantity').invalid && editTicketForm.get('quantity').touched">
+                    <small *ngIf="editTicketForm.get('quantity').invalid && editTicketForm.get('quantity').touched" class="text-danger">Quantity is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6 pt-4" *ngIf="!!this.isTicketEditable">
+                <div class="form-group button-group addbtn">
+                  <button class="btn add-btn" (click)="editTicket()"><i class="fa fa-plus"></i>Add Line Item</button>
+                  <br />
+                </div>
+              </div>
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">Ticket Line Item Record</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row mt-3">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-striped custom-table mb-0 datatable">
+                    <thead>
+                      <tr>
+                        <th style="width: 30px">#</th>
+                        <th>Ticket ID</th>
+                        <th>Driver</th>
+                        <th>Quantity</th>
+                        <th>Truck</th>
+                        <th>Price</th>
+                        <th>Driver Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of loopTicketLineData; let i = index" (click)="setTicketLineItemDetails(item)">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.Ticket_ID }}</td>
+                        <td>{{ item.Driver_Code }}</td>
+                        <td>{{ item.Quantity }}</td>
+                        <td>{{ item.Truck_Description }}</td>
+                        <td>${{ item.Price_Per_Unit }}</td>
+                        <td>${{ item.Driver_Price_Per_Unit }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Edit ticket Modal -->
+
+  <!-- History Modal -->
+  <div id="view_history" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered history-modal" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">History</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-striped custom-table mb-0 datatable trucktable">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px">#</th>
+                      <th>Ticket ID</th>
+                      <th>Job ID</th>
+                      <th>Job Product ID</th>
+                      <th>Code</th>
+                      <th>Updated by</th>
+                      <th>Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of LoopHistoryData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.Ticket_ID }}</td>
+                      <td>{{ item.Job_ID }}</td>
+                      <td>{{ item.Job_Product_ID }}</td>
+                      <td>{{ item.Code }}</td>
+                      <td>{{ item.Updated_By }}</td>
+                      <td>{{ item.Last_Updated_Date | date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /History Modal -->
+</div>

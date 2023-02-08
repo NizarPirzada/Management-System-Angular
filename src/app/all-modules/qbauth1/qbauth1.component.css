@@ -1,0 +1,12 @@
+.btn-img{
+    cursor: pointer;
+    width: 385px;
+    height: auto;
+}
+.content{
+
+    height: 92vh !important;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}

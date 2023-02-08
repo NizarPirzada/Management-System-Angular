@@ -1,0 +1,59 @@
+.table-striped.table-hover>tbody>tr:hover>td, 
+.table-striped.table-hover>tbody>tr:hover>th {
+  background-color: #EFF6FC;
+  /* color: white; */
+}
+.content {
+	padding: 30px;
+}
+
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+  transform: scale(1.5);
+}
+
+.tablelastrow{
+	margin-bottom: 5rem !important;
+}
+.history-modal{
+  max-width: 95vw !important;
+}
+a{
+  cursor: pointer;
+}
+.checktoggle {
+  background-color: #495057;
+}
+
+.page-header{
+  margin-bottom: 5px !important;
+}
+.filter-row .btn {
+  padding: 7px !important;
+  min-height: 40px !important;
+}
+.form-focus .form-control {
+  height: 41px !important;
+  padding: 14px 12px 6px;
+}
+.focus-label{
+opacity: 1;
+  font-weight: 300;
+  top: -20px !important;
+  font-size: 12px !important;
+  z-index: 1 !important;
+}
+.addbtn{
+  margin-top: 0.1rem;
+}
+.btn{
+  padding: 0.475rem 0.75rem;
+}
+td{
+  cursor: pointer;
+}

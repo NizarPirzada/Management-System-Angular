@@ -1,0 +1,17 @@
+.content {
+	padding: 30px;
+}
+
+.card:hover{
+	transform: scale(1.05);
+	transition: all 0.5s ease-in-out;
+	box-shadow: 1px -1px 3px 1px rgba(0,0,0,0.5);
+-webkit-box-shadow: 1px -1px 3px 1px rgba(0,0,0,0.5);
+-moz-box-shadow: 1px -1px 3px 1px rgba(0,0,0,0.5);
+cursor: pointer;
+}
+.card{
+	transition: all 0.5s ease-in-out;
+	cursor: pointer;
+	/* max-width: 80%; */
+}

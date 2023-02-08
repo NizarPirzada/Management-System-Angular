@@ -1,0 +1,664 @@
+<div class="page-wrapper">
+  <!-- Page Content -->
+  <div class="content container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="row align-items-center">
+        <div class="col-auto pt-2">
+          <h3 class="page-title">Jobs</h3>
+        </div>
+        <div class="col-auto float-end ms-auto">
+          <div class="d-flex">
+            <button class="btn add-btn" data-bs-toggle="modal" data-bs-target="#add_jobs" [disabled]="selectedCustomer == 0 ? true : null" (click)="addModelOpen()"><i class="fa fa-plus"></i> Add Job</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row filter-row justify-content-center pb-1">
+      <div class="col-lg-12 d-flex pt-4">
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+          <div class="form-group form-focus select-focus">
+            <select class="form-select floating form-control" [(ngModel)]="selectedCustomer" (ngModelChange)="onCustomerChange($event)" style="padding-right: 2rem">
+              <option value="0">-- Select Customer --</option>
+              <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                {{ data.Code_Description }}
+              </option>
+            </select>
+            <label class="focus-label">Customer</label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 text-center or-col p-1">
+          <h2 class="or-col" style="color: #dee2e6">OR</h2>
+        </div>
+        <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" [(ngModel)]="jobByCode" />
+            <label class="focus-label ticket-label">Job Code</label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-2 col-lg-2 col-xl-2 search-button" style="margin-left: 2rem">
+          <a class="btn btn-success w-100" (click)="GetJobByCode()">Search</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <div class="row pt-2">
+          <div class="w-30 d-flex justify-content-start">
+            <label class="custom-control-label pe-3" for="defaultInline2">Show All </label>
+            <div class="status-toggle align-item-right">
+              <input type="checkbox" id="staff_module" class="check" (change)="ShowAllJobwithComplete($event)" [disabled]="selectedCustomer == 0 ? true : null" />
+              <label for="staff_module" class="checktoggle" style="float: left">checkbox</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--------------------->
+    <!-- <div class="row filter-row justify-content-center">
+      <div class="col-lg-7 d-flex py-3">
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-12 me-2">
+          <div class="form-group form-focus select-focus">
+            <select class="form-select floating form-control" (change)="getJobByCustomerID($event.target.value)"
+              style="padding-right: 2rem">
+              <option value="">-- Select --</option>
+              <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                {{ data.Code_Description }}
+              </option>
+            </select>
+            <label class="focus-label">Customer</label>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 col-12 ms-2">
+          <div class="form-group form-focus select-focus">
+            <select class="form-select floating form-control" (change)="searchJob($event.target.value)"
+              style="padding-right: 2rem">
+              <option value="">-- Select --</option>
+              <option [value]="data.ID" *ngFor="let data of loopJobData">
+                {{ data.Code_Description }}
+              </option>
+            </select>
+            <label class="focus-label">Job</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-1 text-center or-col p-3">
+        <h2>OR</h2>
+      </div>
+      <div class="col-lg-2 py-3 pe-3 ps-0 d-flex justify-content-center">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6 col-12 w-100">
+          <div class="form-group form-focus">
+            <input type="text" class="form-control floating" (input)="searchTicket($event.target.value)" />
+            <label class="focus-label ticket-label">Ticket Number</label>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 p-3">
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6 col-12 search-button">
+          <a class="btn btn-success w-100" (click)="SearchData()">Search</a>
+        </div>
+      </div>
+    </div> -->
+    <!-- /Page Header -->
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="table-responsive">
+          <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-hover custom-table mb-0 datatable">
+            <thead>
+              <tr>
+                <th style="width: 30px">#</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="isLoading">
+              <tr>
+                <td colspan="4" class="text-center">
+                  <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading">
+              <tr *ngIf="Norecordfound == true" style="width: 100%">
+                <td colspan="4" class="text-center">
+                  <p class="text-center mt-2 p-0 pt-0 pb-0">No Record Found</p>
+                </td>
+                <td hidden></td>
+                <td hidden></td>
+                <td hidden></td>
+              </tr>
+              <tr *ngFor="let item of loopJobData; let i = index">
+                <td data-bs-toggle="modal" data-bs-target="#edit_job" (click)="SelectJob(item.ID)">{{ i + 1 }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_job" (click)="SelectJob(item.ID)">{{ item.Code }}</td>
+                <td data-bs-toggle="modal" data-bs-target="#edit_job" (click)="SelectJob(item.ID)">{{ item.Description }}</td>
+                <td class="text-end">
+                  <div class="dropdown dropdown-action">
+                    <a class="action-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="material-icons">more_vert</i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit_job" (click)="SelectJob(item.ID)"><i class="fa fa-pencil m-r-5"></i> Edit </a>
+                      <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#view_history" (click)="getHistory(item.ID)"><i class="fa fa-history m-r-5"></i> View History</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <div *ngIf="isLoading" class="d-flex justify-content-center text-center mb-5">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Page Content -->
+
+  <!-- Add job Modal -->
+  <div id="add_jobs" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Job</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="addJob()" [formGroup]="addJobForm">
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Customer<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addJobForm.get('Customer_ID').invalid && addJobForm.get('Customer_ID').touched" formControlName="Customer_ID" readonly />
+                  <div *ngIf="addJobForm.get('Customer_ID').invalid && addJobForm.get('Customer_ID').touched">
+                    <small *ngIf="addJobForm.get('Customer_ID').invalid && addJobForm.get('Customer_ID').touched" class="text-danger"> Customer is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Code <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addJobForm.get('Code').invalid && addJobForm.get('Code').touched" (change)="setDefaultDescription()" formControlName="Code" />
+                  <div *ngIf="addJobForm.get('Code').invalid && addJobForm.get('Code').touched">
+                    <small *ngIf="addJobForm.get('Code').invalid && addJobForm.get('Code').touched" class="text-danger"> Code is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Description <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addJobForm.get('Description').invalid && addJobForm.get('Description').touched" formControlName="Description" />
+                  <div *ngIf="addJobForm.get('Description').invalid && addJobForm.get('Description').touched">
+                    <small *ngIf="addJobForm.get('Description').invalid && addJobForm.get('Description').touched" class="text-danger"> Description is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>PO Number <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addJobForm.get('PO_Number').invalid && addJobForm.get('PO_Number').touched" formControlName="PO_Number" />
+                  <div *ngIf="addJobForm.get('PO_Number').invalid && addJobForm.get('PO_Number').touched">
+                    <small *ngIf="addJobForm.get('PO_Number').invalid && addJobForm.get('PO_Number').touched" class="text-danger"> PO Number is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Location<span class="text-danger"></span></label>
+                  <input class="form-control" type="text" formControlName="Location" />
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Awarded Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input type="text" class="form-control floating datetimepicker" [value]="awardDate" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" (bsValueChange)="addJobDate($event)" />
+                  </div>
+                  <div *ngIf="addJobForm.get('Awarded_Date').invalid && addJobForm.get('Awarded_Date').touched">
+                    <small *ngIf="addJobForm.get('Awarded_Date').invalid && addJobForm.get('Awarded_Date').touched" class="text-danger"> Awarded Date is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group row">
+                  <label class="col-md-6">Job Completed<span class="text-danger"></span></label>
+                  <div class="status-toggle col-md-6 align-items-right">
+                    <input class="ps-3 check" id="staff_module5" type="checkbox" formControlName="Is_Complete" />
+                    <label for="staff_module5" class="checktoggle" style="float: right">Checkbox</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <!--
+                <div class="justify-content-end d-flex">
+                  <a class="btn add-btn" *ngIf="addnewjob == true" (click)="addNewJob()">
+                    <i class="fa fa-plus"></i>
+                    Add Next Job
+                  </a>
+                </div>
+                -->
+              </div>
+            </div>
+          </form>
+          <form (ngSubmit)="addJob()" [formGroup]="addProductJobForm">
+            <div>
+              <table width="100%" class="my-3">
+                <tr>
+                  <td>
+                    <hr />
+                  </td>
+                  <td class="line-item">Add Product List</td>
+                  <td>
+                    <hr />
+                  </td>
+                </tr>
+              </table>
+              <div class="row">
+                <div class="col-lg-6 col-md-6">
+                  <div class="form-group">
+                    <label>Product</label>
+                    <select class="form-control form-select floating" formControlName="Product_Name" (change)="getProductDetailsByID()">
+                      <option [ngValue]="null">-- New Product --</option>
+                      <option [ngValue]="data.ID" *ngFor="let data of loopProductData">
+                        {{ data.Code_Description }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                  <div class="form-group">
+                    <label>Code<span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" [class.invalid]="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched" formControlName="Product_Code" />
+                    <div *ngIf="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched">
+                      <small *ngIf="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched" class="text-danger">Code is required</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6 col-md-6">
+                  <div class="form-group">
+                    <label>Description<span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" [class.invalid]="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched" formControlName="Product_Description" />
+                    <div *ngIf="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched">
+                      <small *ngIf="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched" class="text-danger">Description is required</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                  <div class="form-group">
+                    <label>Price <span class="text-danger">*</span></label>
+                    <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched" formControlName="Price" />
+                    <div *ngIf="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched">
+                      <small *ngIf="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched" class="text-danger">Price is required</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6 col-md-6">
+                  <div class="form-group">
+                    <label>Truck Hire / Driver Price <span class="text-danger">*</span></label>
+                    <input class="form-control" type="text" (keypress)="keyPress($event)" [class.invalid]="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched" formControlName="Driver_Price" />
+                    <div *ngIf="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched">
+                      <small *ngIf="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched" class="text-danger">Truck Hire / Driver Price is required</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 pt-4">
+                  <div class="form-group justify-content-end d-flex">
+                    <button class="btn add-btn">
+                      <i class="fa fa-plus"></i>
+                      <span *ngIf="addProductJobForm.value.Job_Product_ID > 0">Update Product</span>
+                      <span *ngIf="addProductJobForm.value.Job_Product_ID == 0 || addProductJobForm.value.Job_Product_ID == null || addProductJobForm.value.Job_Product_ID == undefined">Add Product</span>
+                    </button>
+                    <br />
+                  </div>
+                </div>
+              </div>
+              <div class="row"></div>
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">View Product List</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-striped custom-table mb-0 datatable">
+                    <thead>
+                      <tr>
+                        <th style="width: 30px">#</th>
+                        <th>ID</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="!isLoading">
+                      <tr *ngFor="let item of loopProductByJobID; let i = index" (click)="selectJobProduct(item.ID)">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.ID }}</td>
+                        <td>{{ item.Code }}</td>
+                        <td>{{ item.Description }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Add Job Modal -->
+
+  <!-- Edit job Modal -->
+  <div id="edit_job" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Job</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" (click)="closeModel()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="UpdateJob()" [formGroup]="updateJobForm">
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Customer<span class="text-danger">*</span></label>
+                  <select class="form-control form-select floating" formControlName="Customer_ID" (change)="getID($event.target.value)">
+                    <option [value]="data.ID" *ngFor="let data of loopCustomerData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Code <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" *ngFor="let data of loopJobDetailByJobId" [class.invalid]="updateJobForm.get('Code').invalid && updateJobForm.get('Code').touched" formControlName="Code" />
+                  <div *ngIf="updateJobForm.get('Code').invalid && updateJobForm.get('Code').touched">
+                    <small *ngIf="updateJobForm.get('Code').invalid && updateJobForm.get('Code').touched" class="text-danger"> Code is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Description <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" *ngFor="let data of loopJobDetailByJobId" [class.invalid]="updateJobForm.get('Description').invalid && updateJobForm.get('Description').touched" formControlName="Description" />
+                  <div *ngIf="updateJobForm.get('Description').invalid && updateJobForm.get('Description').touched">
+                    <small *ngIf="updateJobForm.get('Description').invalid && updateJobForm.get('Description').touched" class="text-danger"> Description is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>PO Number <span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="updateJobForm.get('PO_Number').invalid && updateJobForm.get('PO_Number').touched" formControlName="PO_Number" />
+                  <div *ngIf="updateJobForm.get('PO_Number').invalid && updateJobForm.get('PO_Number').touched">
+                    <small *ngIf="updateJobForm.get('PO_Number').invalid && updateJobForm.get('PO_Number').touched" class="text-danger"> PO Number is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Location<span class="text-danger"></span></label>
+                  <input class="form-control" type="text" formControlName="Location" />
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Awarded Date<span class="text-danger">*</span></label>
+                  <div class="cal-icon">
+                    <input type="text" class="form-control floating datetimepicker" [class.invalid]="updateJobForm.get('Awarded_Date').invalid && updateJobForm.get('Awarded_Date').touched" formControlName="Awarded_Date" bsDatepicker [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', returnFocusToInput: true }" />
+                  </div>
+                  <div *ngIf="updateJobForm.get('Awarded_Date').invalid && updateJobForm.get('Awarded_Date').touched">
+                    <small *ngIf="updateJobForm.get('Awarded_Date').invalid && updateJobForm.get('Awarded_Date').touched" class="text-danger"> Awarded Date is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group row">
+                  <label class="col-sm-6">Job Completed<span class="text-danger"></span></label>
+                  <div class="status-toggle col-sm-6 align-items-right">
+                    <input class="ps-3 check" id="staff_module4" type="checkbox" formControlName="Is_Complete" />
+                    <label for="staff_module4" class="checktoggle" style="float: right">checkbox</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="justify-content-end d-flex">
+                  <button class="btn add-btn" type="submit">Update Job</button>
+                </div>
+              </div>
+            </div>
+          </form>
+          <form (ngSubmit)="addProduct()" [formGroup]="addProductJobForm">
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">Add Product List</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Product</label>
+                  <select class="form-control form-select floating" formControlName="Product_Name" (change)="getProductDetailsByID()">
+                    <option [ngValue]="null">-- New Product --</option>
+                    <option [ngValue]="data.ID" *ngFor="let data of loopProductData">
+                      {{ data.Code_Description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Code<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched" formControlName="Product_Code" />
+                  <div *ngIf="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched">
+                    <small *ngIf="addProductJobForm.get('Product_Code').invalid && addProductJobForm.get('Product_Code').touched" class="text-danger">Code is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Description<span class="text-danger">*</span></label>
+                  <input class="form-control" type="text" [class.invalid]="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched" formControlName="Product_Description" />
+                  <div *ngIf="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched">
+                    <small *ngIf="addProductJobForm.get('Product_Description').invalid && addProductJobForm.get('Product_Description').touched" class="text-danger">Description is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Price <span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched" formControlName="Price" />
+                  <div *ngIf="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched">
+                    <small *ngIf="addProductJobForm.get('Price').invalid && addProductJobForm.get('Price').touched" class="text-danger">Price is required</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                  <label>Truck Hire / Driver Price <span class="text-danger">*</span></label>
+                  <input class="form-control" (keypress)="keyPress($event)" type="text" [class.invalid]="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched" formControlName="Driver_Price" />
+                  <div *ngIf="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched">
+                    <small *ngIf="addProductJobForm.get('Driver_Price').invalid && addProductJobForm.get('Driver_Price').touched" class="text-danger">Truck Hire / Driver Price is required</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-6">
+                <div class="form-group button-group justify-content-end d-flex pt-4">
+                  <button class="btn add-btn">
+                    <span class="la la-plus"></span>
+                    <span *ngIf="addProductJobForm.value.Job_Product_ID > 0">Update Product</span>
+                    <span *ngIf="addProductJobForm.value.Job_Product_ID == 0 || addProductJobForm.value.Job_Product_ID == null || addProductJobForm.value.Job_Product_ID == undefined">Add Product</span>
+                  </button>
+                  <br />
+                </div>
+              </div>
+            </div>
+            <table width="100%" class="my-3">
+              <tr>
+                <td>
+                  <hr />
+                </td>
+                <td class="line-item">View Product List</td>
+                <td>
+                  <hr />
+                </td>
+              </tr>
+            </table>
+            <div class="row mt-5">
+              <div class="col-md-12">
+                <div class="table-responsive">
+                  <table class="table table-striped custom-table mb-0 datatable">
+                    <thead>
+                      <tr>
+                        <th style="width: 30px">#</th>
+                        <th>ID</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of loopProductByJobID; let i = index" (click)="selectJobProduct(item.ID)">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.ID }}</td>
+                        <td>{{ item.Code }}</td>
+                        <td>{{ item.Description }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="submit-section"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Edit Job Modal -->
+
+  <!-- Delete Job Modal -->
+  <div class="modal custom-modal fade" id="delete_Job" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="form-header">
+            <h3>Delete Job</h3>
+            <p>Are you sure want to delete?</p>
+          </div>
+          <div class="modal-btn delete-action">
+            <div class="row">
+              <div class="col-6">
+                <a class="btn btn-primary continue-btn" (click)="deleteJob()">Delete</a>
+              </div>
+              <div class="col-6">
+                <a data-bs-dismiss="modal" class="btn btn-primary cancel-btn">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /Delete Job Modal -->
+
+  <!-- History Modal -->
+  <div id="view_history" class="modal custom-modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered history-modal" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">History</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="table-responsive">
+                <table class="table table-striped custom-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 30px">#</th>
+                      <th>Job ID</th>
+                      <th>Customer ID</th>
+                      <th>Code</th>
+                      <th>Description</th>
+                      <th>PO Number</th>
+                      <th>Job Completed</th>
+                      <th>Awarded Date</th>
+                      <th>Location</th>
+                      <th>Updated by</th>
+                      <th>Last Updated</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of LoopHistoryData; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.Job_ID }}</td>
+                      <td>{{ item.Customer_ID }}</td>
+                      <td>{{ item.Code }}</td>
+                      <td>{{ item.Description }}</td>
+                      <td>{{ item.PO_Number }}</td>
+                      <td>{{ item.Is_Complete }}</td>
+                      <td>{{ item.Awarded_Date | date }}</td>
+                      <td>{{ item.Location }}</td>
+                      <td>{{ item.Updated_By }}</td>
+                      <td>{{ item.Last_Updated_Date | date }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /History Modal -->
+</div>
